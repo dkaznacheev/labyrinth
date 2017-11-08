@@ -35,7 +35,7 @@ public class Model {
             field.addBorderY(i, 0);
             field.addBorderY(i, 5);
         }
-
+        field.addBorderX(2, 2);
         return demoPlayer;
     }
 

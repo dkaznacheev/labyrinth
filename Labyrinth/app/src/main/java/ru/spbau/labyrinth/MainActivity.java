@@ -43,12 +43,12 @@ public class MainActivity extends AppCompatActivity {
 
         outerScrollView.post(new Runnable() {
             public void run() {
-                outerScrollView.scrollTo(0, 450);
+                outerScrollView.scrollTo(0, 650);
             }
         });
         horizontalScrollView.post(new Runnable() {
             public void run() {
-                horizontalScrollView.scrollTo(450, 0);
+                horizontalScrollView.scrollTo(650, 0);
             }
         });
 

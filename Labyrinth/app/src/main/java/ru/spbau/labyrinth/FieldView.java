@@ -27,71 +27,12 @@ public class FieldView extends View {
     private Paint paint;
     public float scrolledY = 0;
 
-    //Maze maze;
-
     Model model;
     Player myPlayer;
 
-    /*lass Maze {
-        State[][] cells;
-        boolean[][] horizontalWalls;
-        boolean[][] verticalWalls;
-        static final int MAZE_SIZE = 3;
-
-        public Maze() {
-            cells = new State[MAZE_SIZE][MAZE_SIZE];
-
-            for (int i = 0; i < MAZE_SIZE; i++)
-                for (int j = 0; j < MAZE_SIZE; j++)
-                    cells[i][j] = State.NOTHING;
-            cells[1][1] = State.MINOTAUR;
-
-            horizontalWalls = new boolean[MAZE_SIZE + 1][MAZE_SIZE];
-            verticalWalls = new boolean[MAZE_SIZE][MAZE_SIZE + 1];
-
-            horizontalWalls[0][0] = true;
-            horizontalWalls[0][1] = true;
-            horizontalWalls[0][2] = true;
-            horizontalWalls[1][1] = true;
-            horizontalWalls[2][2] = true;
-            horizontalWalls[3][0] = true;
-            horizontalWalls[3][1] = true;
-            horizontalWalls[3][2] = true;
-
-            verticalWalls[0][0] = true;
-            verticalWalls[1][0] = true;
-            verticalWalls[2][0] = true;
-            verticalWalls[1][1] = true;
-            verticalWalls[2][1] = true;
-            verticalWalls[0][3] = true;
-            verticalWalls[1][3] = true;
-        }
-    }
-    */
-/*
-    class Point {
-        float x;
-        float y;
-        public Point(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    private ArrayList<Point> points;
-
-    public void clearDots() {
-        points.clear();
-        invalidate();
-    }
-*/
     public void scrollY (float y) {
         scrolledY = y;
     }
-
-    /*void processClick(float x, float y) {
-        addDot(x, y);
-    }*/
 
     OnTouchListener touchListener = new OnTouchListener() {
         float startX = 0, startY = 0;
@@ -192,17 +133,19 @@ public class FieldView extends View {
             }
     }
 
-    /*private void drawWalls(Canvas canvas) {
+    private void drawWalls(Canvas canvas) {
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(6);
-
-        for (int i = 0; i < Maze.MAZE_SIZE + 1; i++) {
-            for (int j = 0; j < Maze.MAZE_SIZE; j++) {
+        
+        int fieldSize = 5;
+        
+        for (int i = 0; i < fieldSize + 1; i++) {
+            for (int j = 0; j < fieldSize; j++) {
 
                 int cellX = j + MAZE_OFFSET_X;
                 int cellY = i + MAZE_OFFSET_Y;
-                if (maze.horizontalWalls[i][j]) {
+                if (myPlayer.getFieldBorderX(i, j)) {
                     canvas.drawLine(CELL_SIZE * cellX,
                             CELL_SIZE * cellY,
                             CELL_SIZE * (cellX + 1),
@@ -212,12 +155,12 @@ public class FieldView extends View {
             }
         }
 
-        for (int i = 0; i < Maze.MAZE_SIZE; i++) {
-            for (int j = 0; j < Maze.MAZE_SIZE + 1; j++) {
+        for (int i = 0; i < fieldSize; i++) {
+            for (int j = 0; j < fieldSize + 1; j++) {
 
                 int cellX = j + MAZE_OFFSET_X;
                 int cellY = i + MAZE_OFFSET_Y;
-                if (maze.verticalWalls[i][j]) {
+                if (myPlayer.getFieldBorderY(i, j)) {
                     canvas.drawLine(CELL_SIZE * cellX,
                             CELL_SIZE * cellY,
                             CELL_SIZE * cellX,
@@ -228,7 +171,7 @@ public class FieldView extends View {
         }
 
     }
-*/
+
     private void drawBackground(Canvas canvas) {
         paint.setColor(Color.rgb(230, 230, 230)); // light-gray
         paint.setStyle(Paint.Style.FILL);
@@ -269,7 +212,7 @@ public class FieldView extends View {
         drawBackground(canvas);
         drawCells(canvas);
         drawGrid(canvas);
-        //drawWalls(canvas);
+        drawWalls(canvas);
         drawPlayer(canvas);
     }
 

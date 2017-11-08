@@ -49,7 +49,7 @@ public class Field {
     }
 
     public void addBorderY(int row, int column){
-        borderX[row][column] = true;
+        borderY[row][column] = true;
     }
 
     public boolean hasBorderX(int row, int column) {
