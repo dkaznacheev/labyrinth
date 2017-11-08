@@ -177,11 +177,11 @@ public class Model {
         }
 
         public boolean getFieldBorderX(int row, int column) {
-            fieldView.hasBorderX(row, column);
+            return fieldView.hasBorderX(row, column);
         }
 
         public boolean getFieldBorderY(int row, int column) {
-            fieldView.hasBorderY(row, column);
+            return fieldView.hasBorderY(row, column);
         }
     }
 
