@@ -98,9 +98,9 @@ public class Model {
 
     private int[] getPosChage(Direction direction){
         if (direction == Direction.DOWN){
-            return new int[] {0, -1};
-        } else if (direction == Direction.UP){
             return new int[] {0, 1};
+        } else if (direction == Direction.UP){
+            return new int[] {0, -1};
         } else if (direction == Direction.LEFT){
             return new int[] {-1, 0};
         } else if (direction == Direction.RIGHT){
