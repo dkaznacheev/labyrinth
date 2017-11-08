@@ -7,7 +7,7 @@ import ru.spbau.labyrinth.model.Model.Player;
  * class Field. Contains information about playing field. Note: field is square.
  */
 public class Field {
-    private enum State{player, unknown, nothing}; // nothing, hospital etc.
+    public enum State{UNKNOWN, NOTHING, MINOTAUR}; // nothing, hospital etc.
     private int size;
     private State[][] field;
     private boolean[] borderX[];
@@ -22,18 +22,8 @@ public class Field {
         field = new State[size][fieledSize];
 
         for (int i = 0; i < size; i++) {
-            Arrays.fill(field[i], State.nothing);
+            Arrays.fill(field[i], State.NOTHING);
         }
-    }
-
-    /**
-     * addPLayer method. Adds information about player to the field.
-     * @param player is adding player.
-     */
-    public void addPlayer(Player player){
-        int x = player.getX();
-        int y = player.getY();
-        field[x][y] = State.player;
     }
 
     /**
@@ -42,6 +32,14 @@ public class Field {
      */
     public int getSize(){
         return size;
+    }
+
+    public void setState(int x, int y, State state) {
+        field[x][y] = state;
+    }
+
+    public State getState(int x, int y){
+        return field[x][y];
     }
 
     /**
