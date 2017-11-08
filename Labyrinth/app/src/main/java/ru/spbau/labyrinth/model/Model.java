@@ -1,11 +1,5 @@
 package ru.spbau.labyrinth.model;
 
-import android.content.pm.FeatureInfo;
-
-import java.io.File;
-import java.nio.file.FileAlreadyExistsException;
-import java.security.PrivateKey;
-
 import ru.spbau.labyrinth.model.field.*;
 
 /**
@@ -24,7 +18,7 @@ public class Model {
     public Player demoInit(){
         field = new Field(5);
         demoPlayer = new Player(2, 2, "Mr. Smith");
-        demoPlayer = new Player(0, 0, "Deadline");
+        demoMinotaur = new Minotaur(0, 0, "Deadline");
         demoPlayer.setFieldState(0, 0, Field.State.MINOTAUR);
         field.setState(0, 0, Field.State.MINOTAUR);
 
@@ -97,7 +91,7 @@ public class Model {
             if (curx < newx) {
                 return new int[] {1, newx, cury};
             } else {
-                return new int[] {1, curx, curx};
+                return new int[] {1, curx, cury};
             }
         }
     }
