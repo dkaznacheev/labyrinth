@@ -13,6 +13,11 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import ru.spbau.labyrinth.model.field.Field.*;
+import ru.spbau.labyrinth.model.Model;
+import ru.spbau.labyrinth.model.Model.Direction;
+import ru.spbau.labyrinth.model.Model.Player;
+
 public class FieldView extends View {
     private static final int FIELD_WIDTH = 2000;
     private static final int FIELD_HEIGHT = 2000;
@@ -22,23 +27,24 @@ public class FieldView extends View {
     private Paint paint;
     public float scrolledY = 0;
 
-    enum Cell {FREE, RED};
-    Maze maze;
+    //Maze maze;
 
-    class Maze {
-        Cell[][] cells;
+    Model model;
+    Player myPlayer;
+
+    /*lass Maze {
+        State[][] cells;
         boolean[][] horizontalWalls;
         boolean[][] verticalWalls;
         static final int MAZE_SIZE = 3;
 
         public Maze() {
-            cells = new Cell[MAZE_SIZE][MAZE_SIZE];
+            cells = new State[MAZE_SIZE][MAZE_SIZE];
 
             for (int i = 0; i < MAZE_SIZE; i++)
                 for (int j = 0; j < MAZE_SIZE; j++)
-                    cells[i][j] = Cell.FREE;
-            cells[1][1] = Cell.RED;
-
+                    cells[i][j] = State.NOTHING;
+            cells[1][1] = State.MINOTAUR;
 
             horizontalWalls = new boolean[MAZE_SIZE + 1][MAZE_SIZE];
             verticalWalls = new boolean[MAZE_SIZE][MAZE_SIZE + 1];
@@ -61,7 +67,8 @@ public class FieldView extends View {
             verticalWalls[1][3] = true;
         }
     }
-
+    */
+/*
     class Point {
         float x;
         float y;
@@ -77,14 +84,14 @@ public class FieldView extends View {
         points.clear();
         invalidate();
     }
-
+*/
     public void scrollY (float y) {
         scrolledY = y;
     }
 
-    void processClick(float x, float y) {
+    /*void processClick(float x, float y) {
         addDot(x, y);
-    }
+    }*/
 
     OnTouchListener touchListener = new OnTouchListener() {
         float startX = 0, startY = 0;
@@ -99,7 +106,7 @@ public class FieldView extends View {
                 case MotionEvent.ACTION_UP: {
                     if ((startX - event.getX()) < 5 &&
                             (startY - event.getY()) < 5) {
-                        processClick(event.getX(), event.getY() + scrolledY);
+                        //processClick(event.getX(), event.getY() + scrolledY);
                         invalidate();
                     }
                     break;
@@ -109,11 +116,18 @@ public class FieldView extends View {
         }
     };
 
+    private void initGame() {
+        model.demoInit();
+        myPlayer = model.processTurn(Direction.NONE, Direction.NONE);
+    }
+
     {
         paint = new Paint();
         setOnTouchListener(touchListener);
-        points = new ArrayList<>();
-        maze = new Maze();
+        //points = new ArrayList<>();
+        //maze = new Maze();
+        model = new Model();
+        initGame();
     }
 
     public FieldView(Context context) {
@@ -128,10 +142,10 @@ public class FieldView extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    public void addDot(float x, float y) {
+    /*public void addDot(float x, float y) {
         points.add(new Point(x, y));
     }
-
+*/
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(FIELD_WIDTH, FIELD_HEIGHT);
@@ -140,12 +154,13 @@ public class FieldView extends View {
     private void drawCells(Canvas canvas) {
         paint.setStyle(Paint.Style.FILL);
 
-        for (int i = 0; i < Maze.MAZE_SIZE; i++)
-            for (int j = 0; j <  Maze.MAZE_SIZE; j++) {
+        int fieldSize = 5;
+        for (int i = 0; i < fieldSize; i++)
+            for (int j = 0; j <  fieldSize; j++) {
                 int cellX = j + MAZE_OFFSET_X;
                 int cellY = i + MAZE_OFFSET_Y;
-                switch (maze.cells[i][j]) {
-                    case FREE: {
+                switch (myPlayer.getFieldState(j, i)) {
+                    case NOTHING: {
                         paint.setColor(Color.WHITE);
 
                         canvas.drawRect(CELL_SIZE * cellX,
@@ -155,7 +170,17 @@ public class FieldView extends View {
                                 paint);
                         break;
                     }
-                    case RED: {
+                    case UNKNOWN: {
+                        paint.setColor(Color.rgb(230, 230, 230));
+
+                        canvas.drawRect(CELL_SIZE * cellX,
+                                CELL_SIZE * cellY,
+                                CELL_SIZE * (cellX + 1),
+                                CELL_SIZE * (cellY + 1),
+                                paint);
+                        break;
+                    }
+                    case MINOTAUR: {
                         Bitmap bitmapSource = BitmapFactory.decodeResource(getResources(), R.drawable.bull);
                         Bitmap.createScaledBitmap(bitmapSource, CELL_SIZE, CELL_SIZE, true);
                         canvas.drawBitmap(Bitmap.createScaledBitmap(bitmapSource, CELL_SIZE, CELL_SIZE, true),
@@ -167,7 +192,7 @@ public class FieldView extends View {
             }
     }
 
-    private void drawWalls(Canvas canvas) {
+    /*private void drawWalls(Canvas canvas) {
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(6);
@@ -203,16 +228,23 @@ public class FieldView extends View {
         }
 
     }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+*/
+    private void drawBackground(Canvas canvas) {
         paint.setColor(Color.rgb(230, 230, 230)); // light-gray
         paint.setStyle(Paint.Style.FILL);
         canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
+    }
 
-        drawCells(canvas);
+    private void drawPlayer(Canvas canvas) {
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.RED);
+        int playerX = myPlayer.getX();
+        int playerY = myPlayer.getY();
+        canvas.drawCircle(CELL_SIZE * (MAZE_OFFSET_X + playerX) + CELL_SIZE / 2,
+                          CELL_SIZE * (MAZE_OFFSET_Y + playerY) + CELL_SIZE / 2, CELL_SIZE/3, paint);
+    }
 
+    private void drawGrid(Canvas canvas) {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(3);
         paint.setColor(Color.rgb(200, 200, 200));
@@ -226,13 +258,24 @@ public class FieldView extends View {
 
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.RED);
-        for (int i = 0; i < points.size(); i++) {
+        /*for (int i = 0; i < points.size(); i++) {
             canvas.drawCircle(points.get(i).x, points.get(i).y, 10, paint);
-        }
-
-        drawWalls(canvas);
-
+        }*/
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        drawBackground(canvas);
+        drawCells(canvas);
+        drawGrid(canvas);
+        //drawWalls(canvas);
+        drawPlayer(canvas);
+    }
+
+    public void nextTurn(Direction moveDirection, Direction shootDirection) {
+        myPlayer = model.processTurn(moveDirection, shootDirection);
+        invalidate();
+    }
 
 }

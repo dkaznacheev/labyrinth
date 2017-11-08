@@ -4,18 +4,18 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
-
 import java.util.EnumMap;
 import java.util.Map;
 
+import ru.spbau.labyrinth.model.Model.*;
+
 public class DirectionChooseView extends View {
-    public enum Direction {UP, DOWN, LEFT, RIGHT, NONE}
     private Map<Direction, Integer> positionX;
     private Map<Direction, Integer> positionY;
 
@@ -49,6 +49,10 @@ public class DirectionChooseView extends View {
 
     public DirectionChooseView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    public Direction getDirection() {
+        return chosen;
     }
 
     public void resetDirection() {

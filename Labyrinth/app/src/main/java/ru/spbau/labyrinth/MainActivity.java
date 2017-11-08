@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
         nextTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fieldView.clearDots();
+                //fieldView.clearDots();
+                fieldView.nextTurn(moveDirectionChooseView.getDirection(), shootDirectionChooseView.getDirection());
                 moveDirectionChooseView.resetDirection();
                 shootDirectionChooseView.resetDirection();
             }

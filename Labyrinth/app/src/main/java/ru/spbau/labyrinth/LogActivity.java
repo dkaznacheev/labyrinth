@@ -12,13 +12,15 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.spbau.labyrinth.model.Model.*;
+
 public class LogActivity extends AppCompatActivity {
     class Move {
-        DirectionChooseView.Direction moveDirection;
-        DirectionChooseView.Direction shootDirection;
+        Direction moveDirection;
+        Direction shootDirection;
 
-        public Move(DirectionChooseView.Direction moveDirection,
-                    DirectionChooseView.Direction shootDirection) {
+        public Move(Direction moveDirection,
+                    Direction shootDirection) {
             this.moveDirection = moveDirection;
             this.shootDirection = shootDirection;
         }
@@ -36,8 +38,8 @@ public class LogActivity extends AppCompatActivity {
             for (int i = 0; i < 5; i++) {
                 Move[] turn = new Move[players];
                 for (int j = 0; j < players; j++) {
-                    turn[j] = new Move(DirectionChooseView.Direction.UP,
-                            DirectionChooseView.Direction.UP);
+                    turn[j] = new Move(Direction.UP,
+                            Direction.UP);
                 }
                 moves.add(turn);
             }
