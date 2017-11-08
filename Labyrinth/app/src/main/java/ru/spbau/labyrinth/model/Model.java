@@ -35,7 +35,14 @@ public class Model {
             field.addBorderY(i, 0);
             field.addBorderY(i, 5);
         }
+        field.addBorderX(1, 2);
         field.addBorderX(2, 2);
+        field.addBorderX(2, 1);
+        field.addBorderX(3, 1);
+        field.addBorderY(1, 2);
+        field.addBorderY(2, 2);
+        field.addBorderY(2, 1);
+        field.addBorderY(3, 1);
         return demoPlayer;
     }
 
@@ -157,7 +164,9 @@ public class Model {
         }
 
         public void spendCartridge(){
-            cartridgesCnt--;
+            if (cartridgesCnt > 0) {
+                cartridgesCnt--;
+            }
         }
 
         public void setFieldState(int x, int y, Field.State state){
@@ -174,6 +183,10 @@ public class Model {
 
         public void setFieldBorderY(int row, int column) {
             fieldView.addBorderY(row, column);
+        }
+
+        public int getCartridgesCnt() {
+            return cartridgesCnt;
         }
 
         public boolean getFieldBorderX(int row, int column) {

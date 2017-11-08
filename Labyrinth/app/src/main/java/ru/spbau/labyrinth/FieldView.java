@@ -11,9 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
-
-import ru.spbau.labyrinth.model.field.Field.*;
 import ru.spbau.labyrinth.model.Model;
 import ru.spbau.labyrinth.model.Model.Direction;
 import ru.spbau.labyrinth.model.Model.Player;
@@ -27,7 +24,6 @@ public class FieldView extends View {
     private Paint paint;
     public float scrolledY = 0;
 
-    Model model;
     Player myPlayer;
 
     public void scrollY (float y) {
@@ -57,18 +53,15 @@ public class FieldView extends View {
         }
     };
 
-    private void initGame() {
+    /*private void initGame() {
         model.demoInit();
         myPlayer = model.processTurn(Direction.NONE, Direction.NONE);
-    }
+    }*/
 
     {
         paint = new Paint();
         setOnTouchListener(touchListener);
-        //points = new ArrayList<>();
-        //maze = new Maze();
-        model = new Model();
-        initGame();
+        //initGame();
     }
 
     public FieldView(Context context) {
@@ -83,10 +76,6 @@ public class FieldView extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    /*public void addDot(float x, float y) {
-        points.add(new Point(x, y));
-    }
-*/
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(FIELD_WIDTH, FIELD_HEIGHT);
@@ -184,7 +173,8 @@ public class FieldView extends View {
         int playerX = myPlayer.getX();
         int playerY = myPlayer.getY();
         canvas.drawCircle(CELL_SIZE * (MAZE_OFFSET_X + playerX) + CELL_SIZE / 2,
-                          CELL_SIZE * (MAZE_OFFSET_Y + playerY) + CELL_SIZE / 2, CELL_SIZE/3, paint);
+                          CELL_SIZE * (MAZE_OFFSET_Y + playerY) + CELL_SIZE / 2,
+                          CELL_SIZE/3, paint);
     }
 
     private void drawGrid(Canvas canvas) {
@@ -216,8 +206,8 @@ public class FieldView extends View {
         drawPlayer(canvas);
     }
 
-    public void nextTurn(Direction moveDirection, Direction shootDirection) {
-        myPlayer = model.processTurn(moveDirection, shootDirection);
+    public void updatePlayer(Player newPlayer) {
+        myPlayer = newPlayer;
         invalidate();
     }
 
