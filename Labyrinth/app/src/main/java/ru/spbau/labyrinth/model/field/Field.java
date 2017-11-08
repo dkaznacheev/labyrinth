@@ -10,8 +10,8 @@ public class Field {
     public enum State{UNKNOWN, NOTHING, MINOTAUR}; // nothing, hospital etc.
     private int size;
     private State[][] field;
-    private boolean[] borderX[];
-    private boolean[] borderY[];
+    private boolean[][] borderX;
+    private boolean[][] borderY;
 
     /**
      * Field constructor, creates new empty field.
@@ -20,6 +20,8 @@ public class Field {
     public Field(int fieledSize) {
         size = fieledSize;
         field = new State[size][fieledSize];
+        borderX = new boolean[fieledSize + 1][fieledSize];
+        borderY = new boolean[fieledSize + 1][fieledSize];
 
         for (int i = 0; i < size; i++) {
             Arrays.fill(field[i], State.NOTHING);
@@ -40,6 +42,22 @@ public class Field {
 
     public State getState(int x, int y){
         return field[x][y];
+    }
+
+    public void addBorderX(int row, int column){
+        borderX[row][column] = true;
+    }
+
+    public void addBorderY(int column, int row){
+        borderX[column][row] = true;
+    }
+
+    public boolean hasBorderX( int row, int column) {
+        return borderX[row][column];
+    }
+
+    public boolean hasBorderY(int column, int row) {
+        return borderY[column][row];
     }
 
     /**

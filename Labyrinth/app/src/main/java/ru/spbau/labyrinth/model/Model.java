@@ -3,6 +3,7 @@ package ru.spbau.labyrinth.model;
 import android.content.pm.FeatureInfo;
 
 import java.io.File;
+import java.nio.file.FileAlreadyExistsException;
 import java.security.PrivateKey;
 
 import ru.spbau.labyrinth.model.field.*;
@@ -16,10 +17,11 @@ public class Model {
     public enum Direction{UP, DOWN, LEFT, RIGHT, NONE};
 
     //One player demo.
+
     private Player demoPlayer;
     private Minotaur demoMinotaur;
 
-    public void demoInit(){
+    public Player demoInit(){
         field = new Field(5);
         demoPlayer = new Player(2, 2, "Mr. Smith");
         demoPlayer = new Player(0, 0, "Deadline");
@@ -32,26 +34,72 @@ public class Model {
                     demoPlayer.setFieldState(i, j, Field.State.UNKNOWN);
             }
         }
+
+        field.addBorderX(1, 1);
+        field.addBorderX(2, 2);
+        field.addBorderX(3, 3);
+        field.addBorderY(1, 1);
+        field.addBorderY(4, 4);
+
+        return demoPlayer;
     }
 
     public Player processTurn(Model.Direction moveDir, Model.Direction shootDir) {
         int[] d = getPosChage(moveDir);
         int newx = demoPlayer.getX() + d[0];
         int newy = demoPlayer.getY() + d[1];
-        demoPlayer.setX(newx);
-        demoPlayer.setY(newy);
+
         if (shootDir != Direction.NONE) {
             demoPlayer.spendCartridge();
         }
-        if (demoPlayer.getFieldState(newx, newy) == Field.State.UNKNOWN) {
-            if (newx == 0 && newy == 0){
-                demoPlayer.setFieldState(newx, newy, Field.State.MINOTAUR);
-            } else {
-                demoPlayer.setFieldState(newx, newy, Field.State.NOTHING);
+
+        if (newx == demoPlayer.getX() && newy == demoPlayer.getY()) {
+            return demoPlayer;
+        }
+
+        if (!isBorder(demoPlayer.getX(), demoPlayer.getY(), newx, newy)) {
+            demoPlayer.setX(newx);
+            demoPlayer.setY(newy);
+            if (demoPlayer.getFieldState(newx, newy) == Field.State.UNKNOWN) {
+                if (newx == 0 && newy == 0){
+                    demoPlayer.setFieldState(newx, newy, Field.State.MINOTAUR);
+                } else {
+                    demoPlayer.setFieldState(newx, newy, Field.State.NOTHING);
+                }
             }
+        } else {
+            int ind[] = getBorderInd(demoPlayer.getX(), demoPlayer.getY(), newx, newy);
+            if (ind[0] == 1)
+                demoPlayer.setFieldBorderX(ind[1], ind[2]);
+            else
+                demoPlayer.setFieldBorderY(ind[1], ind[2]);
         }
 
         return demoPlayer;
+    }
+
+    private boolean isBorder(int curx, int cury, int newx, int newy){
+        int ind[] = getBorderInd(curx, cury, newx, newy);
+        if (ind[0] == 0)
+            return field.hasBorderX(ind[1], ind[2]);
+        else
+            return field.hasBorderY(ind[1], ind[2]);
+    }
+
+    private int[] getBorderInd(int curx, int cury, int newx, int newy) {
+        if (curx == newx) {
+            if (cury < newy) {
+                return new int[] {0, newy, curx};
+            } else {
+                return new int[] {0, cury, curx};
+            }
+        } else {
+            if (curx < newx) {
+                return new int[] {1, newx, cury};
+            } else {
+                return new int[] {1, curx, curx};
+            }
+        }
     }
 
     private int[] getPosChage(Direction direction){
@@ -123,6 +171,14 @@ public class Model {
 
         public Field.State getFieldState(int x, int y){
             return fieldView.getState(x, y);
+        }
+
+        public void setFieldBorderX(int row, int column) {
+            fieldView.addBorderX(row, column);
+        }
+
+        public void setFieldBorderY(int column, int row) {
+            fieldView.addBorderY(column, row);
         }
     }
 
