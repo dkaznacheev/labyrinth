@@ -40,7 +40,7 @@ public class Model {
     }
 
     public Player processTurn(Model.Direction moveDir, Model.Direction shootDir) {
-        int[] d = getPosChage(moveDir);
+        int[] d = getPosChange(moveDir);
         int newx = demoPlayer.getX() + d[0];
         int newy = demoPlayer.getY() + d[1];
 
@@ -64,7 +64,7 @@ public class Model {
             }
         } else {
             int ind[] = getBorderInd(demoPlayer.getX(), demoPlayer.getY(), newx, newy);
-            if (ind[0] == 1)
+            if (ind[0] == 0)
                 demoPlayer.setFieldBorderX(ind[1], ind[2]);
             else
                 demoPlayer.setFieldBorderY(ind[1], ind[2]);
@@ -97,7 +97,7 @@ public class Model {
         }
     }
 
-    private int[] getPosChage(Direction direction){
+    private int[] getPosChange(Direction direction){
         if (direction == Direction.DOWN){
             return new int[] {0, 1};
         } else if (direction == Direction.UP){
