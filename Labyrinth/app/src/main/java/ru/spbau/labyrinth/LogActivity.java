@@ -2,6 +2,7 @@ package ru.spbau.labyrinth;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -35,7 +36,7 @@ public class LogActivity extends AppCompatActivity {
             for (int i = 0; i < 5; i++) {
                 Move[] turn = new Move[players];
                 for (int j = 0; j < players; j++) {
-                    turn[i] = new Move(DirectionChooseView.Direction.UP,
+                    turn[j] = new Move(DirectionChooseView.Direction.UP,
                             DirectionChooseView.Direction.UP);
                 }
                 moves.add(turn);
@@ -65,6 +66,7 @@ public class LogActivity extends AppCompatActivity {
                 TextView textView = new TextView(this);
                 Move move = gameLog.getMove(i, j);
                 textView.setText(String.format("s:%s, m:%s", move.moveDirection.name(), move.shootDirection.name()));
+                textView.setGravity(Gravity.CENTER_HORIZONTAL);
                 row.addView(textView);
             }
             table.addView(row);
