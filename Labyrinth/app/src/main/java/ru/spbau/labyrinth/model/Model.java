@@ -175,6 +175,14 @@ public class Model {
         public void setFieldBorderY(int row, int column) {
             fieldView.addBorderY(row, column);
         }
+
+        public boolean getFieldBorderX(int row, int column) {
+            fieldView.hasBorderX(row, column);
+        }
+
+        public boolean getFieldBorderY(int row, int column) {
+            fieldView.hasBorderY(row, column);
+        }
     }
 
     public class Minotaur{
