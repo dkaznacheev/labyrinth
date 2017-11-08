@@ -15,25 +15,26 @@ public class Model {
     private Player demoPlayer;
     private Minotaur demoMinotaur;
 
-    public Player demoInit(){
+    public Player demoInit() {
         field = new Field(5);
         demoPlayer = new Player(2, 2, "Mr. Smith");
         demoMinotaur = new Minotaur(0, 0, "Deadline");
         demoPlayer.setFieldState(0, 0, Field.State.MINOTAUR);
         field.setState(0, 0, Field.State.MINOTAUR);
 
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 5; j++) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
                 if (i != 2 || j != 2)
                     demoPlayer.setFieldState(i, j, Field.State.UNKNOWN);
             }
         }
 
-        field.addBorderX(1, 1);
-        field.addBorderX(2, 2);
-        field.addBorderX(3, 3);
-        field.addBorderY(1, 1);
-        field.addBorderY(4, 4);
+        for (int i = 0; i < 5; i++){
+            field.addBorderX(0, i);
+            field.addBorderX(5, i);
+            field.addBorderY(i, 0);
+            field.addBorderY(i, 5);
+        }
 
         return demoPlayer;
     }
@@ -89,9 +90,9 @@ public class Model {
             }
         } else {
             if (curx < newx) {
-                return new int[] {1, newx, cury};
+                return new int[] {1, cury, newx};
             } else {
-                return new int[] {1, curx, cury};
+                return new int[] {1, cury, curx};
             }
         }
     }
@@ -171,8 +172,8 @@ public class Model {
             fieldView.addBorderX(row, column);
         }
 
-        public void setFieldBorderY(int column, int row) {
-            fieldView.addBorderY(column, row);
+        public void setFieldBorderY(int row, int column) {
+            fieldView.addBorderY(row, column);
         }
     }
 

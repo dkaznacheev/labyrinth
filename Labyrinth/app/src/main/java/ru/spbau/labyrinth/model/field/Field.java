@@ -21,7 +21,7 @@ public class Field {
         size = fieledSize;
         field = new State[size][fieledSize];
         borderX = new boolean[fieledSize + 1][fieledSize];
-        borderY = new boolean[fieledSize + 1][fieledSize];
+        borderY = new boolean[fieledSize][fieledSize + 1];
 
         for (int i = 0; i < size; i++) {
             Arrays.fill(field[i], State.NOTHING);
@@ -48,16 +48,16 @@ public class Field {
         borderX[row][column] = true;
     }
 
-    public void addBorderY(int column, int row){
-        borderX[column][row] = true;
+    public void addBorderY(int row, int column){
+        borderX[row][column] = true;
     }
 
-    public boolean hasBorderX( int row, int column) {
+    public boolean hasBorderX(int row, int column) {
         return borderX[row][column];
     }
 
-    public boolean hasBorderY(int column, int row) {
-        return borderY[column][row];
+    public boolean hasBorderY(int row, int column) {
+        return borderY[row][column];
     }
 
     /**
