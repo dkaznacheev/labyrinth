@@ -105,7 +105,7 @@ public class Model {
         } else if (direction == Direction.LEFT){
             return new int[] {-1, 0};
         } else if (direction == Direction.RIGHT){
-            return new int[] {0, 1};
+            return new int[] {1, 0};
         }
         return new int[] {0, 0};
     }
