@@ -1,5 +1,9 @@
 package ru.spbau.labyrinth.model;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 import ru.spbau.labyrinth.model.field.*;
 
 /**
@@ -17,7 +21,7 @@ public class Model {
 
     public Player demoInit() {
         field = new Field(5);
-        demoPlayer = new Player(2, 2, "Mr. Smith");
+        demoPlayer = new Player(2, 2, "Mr. Smith", 0);
         demoMinotaur = new Minotaur(0, 0, "Deadline");
         demoPlayer.setFieldState(0, 0, Field.State.MINOTAUR);
         field.setState(0, 0, Field.State.MINOTAUR);
@@ -73,6 +77,60 @@ public class Model {
         return demoPlayer;
     }
 
+    public Player[] init(String[] names, int fieldSize) {
+        int n = players.length;
+
+        Random rnd = new Random();
+
+        field = generateRandomField(rnd, fieldSize);
+        players = new Player[n];
+
+        Set<Integer> st = new HashSet<>();
+        int pos[] = generateRandomPosition(rnd);
+        for(int i = 0; i < n; i++) {
+            while (st.contains(pos[0] * fieldSize + pos[1])) {
+                pos = generateRandomPosition(rnd);
+            }
+
+            st.add(pos[0] * fieldSize + pos[1]);
+
+            players[i] = new Player(pos[0], pos[1], names[i], i);
+        }
+
+        while (st.contains(pos[0] * fieldSize + pos[1])) {
+            pos = generateRandomPosition(rnd);
+        }
+
+        field.setState(pos[0], pos[1], Field.State.MINOTAUR);
+        return players;
+    }
+
+    // TODO something less genious :)
+    public Field generateRandomField(Random random, int fieldSize) {
+        Field f = new Field(fieldSize);
+
+        for(int i = 0; i < fieldSize; i++) {
+            f.addBorderX(0, i);
+            f.addBorderX(fieldSize, i);
+            f.addBorderY(i, 0);
+            f.addBorderY(i, fieldSize);
+        }
+
+        return f;
+    }
+
+    private int[] generateRandomPosition(Random random) {
+        int[] pos = new int[2];
+        pos[0] = random.nextInt() % field.getSize();
+        pos[1] = random.nextInt() % field.getSize();
+        return pos;
+    }
+
+    public Player[] processTurnMuliplayer(Turn[] turns) {
+
+        return players;
+    }
+
     private boolean isBorder(int curx, int cury, int newx, int newy){
         int ind[] = getBorderInd(curx, cury, newx, newy);
         if (ind[0] == 0)
@@ -114,7 +172,7 @@ public class Model {
      * Inner class Player. Contains information about player and his filed view.
      */
     public class Player{
-        private int x, y, hp, cartridgesCnt;
+        private int x, y, hp, cartridgesCnt, id;
         private String name;
         private Field fieldView;
 
@@ -123,13 +181,22 @@ public class Model {
          * @param posx is players x-coordinate.
          * @param posy is players y-coordinate.
          * @param name is players name.
+         * @param id is players id.
          */
-        Player(int posx, int posy, String name){
+        Player(int posx, int posy, String name, int id){
             this.x = posx;
             this.y = posy;
             this.name = name;
             fieldView = new Field(Model.this.field.getSize());
             cartridgesCnt = 3;
+
+            for(int i = 0; i < fieldView.getSize(); i++) {
+                for(int j = 0; j < fieldView.getSize(); j++) {
+                    fieldView.setState(i, j, Field.State.UNKNOWN);
+                }
+            }
+
+            fieldView.setState(x, y, Field.State.NOTHING);
         }
 
         /**
@@ -183,6 +250,10 @@ public class Model {
         public boolean getFieldBorderY(int row, int column) {
             return fieldView.hasBorderY(row, column);
         }
+
+        public int getId() {
+            return id;
+        }
     }
 
     public class Minotaur{
@@ -196,6 +267,16 @@ public class Model {
         }
     }
 
+    public class Turn{
+        private Model.Direction moveDir;
+        private Model.Direction shootDir;
+
+        Turn(Model.Direction moveDirection, Model.Direction shootDirection) {
+            moveDir = moveDirection;
+            shootDir = shootDirection;
+        }
+    }
+
 
     /**
      * findPlayerByPosition method, returns player whose position is (x, y) or null if such player
@@ -204,13 +285,4 @@ public class Model {
      * @param y is y-coordinate of field on which we are looking for a Player.
      * @return player located by given coordinates or null if such player doesn't exist.
      */
-    /*
-    public Player findPlayerByPosition(int x, int y){
-        for(Player player: players) {
-            if (player.x == x && player.y == y){
-                return player;
-            }
-        }
-        return null;
-    }*/
 }
