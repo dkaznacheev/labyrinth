@@ -6,13 +6,13 @@ import java.util.Set;
 
 import ru.spbau.labyrinth.model.field.*;
 
-/**
- * class Model. Contains game model.
- */
 public class Model {
     private Player[] players;
     private Field field;
-    public enum Direction{UP, DOWN, LEFT, RIGHT, NONE};
+
+    public enum Direction {UP, DOWN, LEFT, RIGHT, NONE}
+
+    ;
 
     //One player demo.
 
@@ -33,7 +33,7 @@ public class Model {
             }
         }
 
-        for (int i = 0; i < 5; i++){
+        for (int i = 0; i < 5; i++) {
             field.addBorderX(0, i);
             field.addBorderX(5, i);
             field.addBorderY(i, 0);
@@ -50,7 +50,7 @@ public class Model {
         return demoPlayer;
     }
 
-    public Player processTurn(Model.Direction moveDir, Model.Direction shootDir) {
+    public Player demoProcessTurn(Model.Direction moveDir, Model.Direction shootDir) {
         int[] d = getPosChange(moveDir);
         int newx = demoPlayer.getX() + d[0];
         int newy = demoPlayer.getY() + d[1];
@@ -67,7 +67,7 @@ public class Model {
             demoPlayer.setX(newx);
             demoPlayer.setY(newy);
             if (demoPlayer.getFieldState(newx, newy) == Field.State.UNKNOWN) {
-                if (newx == 0 && newy == 0){
+                if (newx == 0 && newy == 0) {
                     demoPlayer.setFieldState(newx, newy, Field.State.MINOTAUR);
                 } else {
                     demoPlayer.setFieldState(newx, newy, Field.State.NOTHING);
@@ -75,15 +75,68 @@ public class Model {
             }
         } else {
             int ind[] = getBorderInd(demoPlayer.getX(), demoPlayer.getY(), newx, newy);
-            if (ind[0] == 0)
+            if (ind[0] == 0) {
                 demoPlayer.setFieldBorderX(ind[1], ind[2]);
-            else
+            } else {
                 demoPlayer.setFieldBorderY(ind[1], ind[2]);
+            }
         }
 
         return demoPlayer;
     }
 
+    private void processTurn(Turn turn) {
+        int index = turn.getId();
+        int[] d = getPosChange(turn.getMoveDir());
+        int newx = players[index].getX() + d[0];
+        int newy = players[index].getY() + d[1];
+
+        if (turn.getShootDir() != Direction.NONE) {
+            players[index].spendCartridge();
+        }
+
+        if (newx == players[index].getX() && newy == players[index].getY()) {
+            return;
+        }
+
+        if (!isBorder(players[index].getX(), players[index].getY(), newx, newy)) {
+            players[index].setX(newx);
+            players[index].setY(newy);
+            if (players[index].getFieldState(newx, newy) == Field.State.UNKNOWN) {
+                players[index].setFieldState(newx, newy, Field.State.NOTHING);
+            }
+        } else {
+            int ind[] = getBorderInd(players[index].getX(), players[index].getY(), newx, newy);
+            if (ind[0] == 0) {
+                players[index].setFieldBorderX(ind[1], ind[2]);
+            } else {
+                players[index].setFieldBorderY(ind[1], ind[2]);
+            }
+        }
+    }
+
+    /**
+     * processTurnMuliplayer method is intended for analysis one game turn.
+     *
+     * @param turns is array which describes each player turn.
+     * @return players array, which contains updated information.
+     */
+    public Player[] processTurnMuliplayer(Turn[] turns) {
+        for (Turn turn : turns) {
+            processTurn(turn);
+        }
+        return players;
+    }
+
+
+    /**
+     * game model initial method.
+     *
+     * @param names     is array of players names.
+     * @param fieldSize is size of playing field.
+     * @return array of players, which contains basic information about players.
+     * Note: id for players will be in the same order as names are given.
+     */
     public Player[] init(String[] names, int fieldSize) {
         int n = players.length;
 
@@ -94,7 +147,7 @@ public class Model {
 
         Set<Integer> st = new HashSet<>();
         int pos[] = generateRandomPosition(rnd);
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             while (st.contains(pos[0] * fieldSize + pos[1])) {
                 pos = generateRandomPosition(rnd);
             }
@@ -112,11 +165,11 @@ public class Model {
         return players;
     }
 
-    // TODO something less genious :)
+    // TODO something less genius :)
     public Field generateRandomField(Random random, int fieldSize) {
         Field f = new Field(fieldSize);
 
-        for(int i = 0; i < fieldSize; i++) {
+        for (int i = 0; i < fieldSize; i++) {
             f.addBorderX(0, i);
             f.addBorderX(fieldSize, i);
             f.addBorderY(i, 0);
@@ -133,72 +186,61 @@ public class Model {
         return pos;
     }
 
-    public Player[] processTurnMuliplayer(Turn[] turns) {
-
-        return players;
-    }
-
-    private boolean isBorder(int curx, int cury, int newx, int newy){
+    private boolean isBorder(int curx, int cury, int newx, int newy) {
         int ind[] = getBorderInd(curx, cury, newx, newy);
-        if (ind[0] == 0)
+        if (ind[0] == 0) {
             return field.hasBorderX(ind[1], ind[2]);
-        else
+        } else {
             return field.hasBorderY(ind[1], ind[2]);
+        }
     }
 
     private int[] getBorderInd(int curx, int cury, int newx, int newy) {
         if (curx == newx) {
             if (cury < newy) {
-                return new int[] {0, newy, curx};
+                return new int[]{0, newy, curx};
             } else {
-                return new int[] {0, cury, curx};
+                return new int[]{0, cury, curx};
             }
         } else {
             if (curx < newx) {
-                return new int[] {1, cury, newx};
+                return new int[]{1, cury, newx};
             } else {
-                return new int[] {1, cury, curx};
+                return new int[]{1, cury, curx};
             }
         }
     }
 
-    private int[] getPosChange(Direction direction){
-        if (direction == Direction.DOWN){
-            return new int[] {0, 1};
-        } else if (direction == Direction.UP){
-            return new int[] {0, -1};
-        } else if (direction == Direction.LEFT){
-            return new int[] {-1, 0};
-        } else if (direction == Direction.RIGHT){
-            return new int[] {1, 0};
+    private int[] getPosChange(Direction direction) {
+        if (direction == Direction.DOWN) {
+            return new int[]{0, 1};
+        } else if (direction == Direction.UP) {
+            return new int[]{0, -1};
+        } else if (direction == Direction.LEFT) {
+            return new int[]{-1, 0};
+        } else if (direction == Direction.RIGHT) {
+            return new int[]{1, 0};
         }
-        return new int[] {0, 0};
+        return new int[]{0, 0};
     }
 
-    /**
-     * Inner class Player. Contains information about player and his filed view.
-     */
-    public class Player{
+    public class Player {
         private int x, y, hp, cartridgesCnt, id;
+        private int initialX, initialY;
         private String name;
         private Field fieldView;
 
-        /**
-         * Player constructor.
-         * @param posx is players x-coordinate.
-         * @param posy is players y-coordinate.
-         * @param name is players name.
-         * @param id is players id.
-         */
-        Player(int posx, int posy, String name, int id){
+        Player(int posx, int posy, String name, int id) {
             this.x = posx;
             this.y = posy;
+            this.initialX = x;
+            this.initialY = y;
             this.name = name;
             fieldView = new Field(Model.this.field.getSize());
             cartridgesCnt = 3;
 
-            for(int i = 0; i < fieldView.getSize(); i++) {
-                for(int j = 0; j < fieldView.getSize(); j++) {
+            for (int i = 0; i < fieldView.getSize(); i++) {
+                for (int j = 0; j < fieldView.getSize(); j++) {
                     fieldView.setState(i, j, Field.State.UNKNOWN);
                 }
             }
@@ -206,18 +248,10 @@ public class Model {
             fieldView.setState(x, y, Field.State.NOTHING);
         }
 
-        /**
-         * getX method, returns players x-coordinate.
-         * @return players x-coordinate.
-         */
         public int getX() {
             return x;
         }
 
-        /**
-         * getY method, returns players x-coordinate.
-         * @return players y-coordinate.
-         */
         public int getY() {
             return y;
         }
@@ -230,17 +264,15 @@ public class Model {
             this.y = y;
         }
 
-        public void spendCartridge(){
-            if (cartridgesCnt > 0) {
-                cartridgesCnt--;
-            }
+        public void spendCartridge() {
+            cartridgesCnt--;
         }
 
-        public void setFieldState(int x, int y, Field.State state){
+        public void setFieldState(int x, int y, Field.State state) {
             fieldView.setState(x, y, state);
         }
 
-        public Field.State getFieldState(int x, int y){
+        public Field.State getFieldState(int x, int y) {
             return fieldView.getState(x, y);
         }
 
@@ -267,35 +299,58 @@ public class Model {
         public int getId() {
             return id;
         }
+
+        public int getInitialX() {
+            return initialX;
+        }
+
+        public int getInitialY() {
+            return initialY;
+        }
     }
 
-    public class Minotaur{
+    public class Minotaur {
         private int x, y;
         private String name;
 
-        Minotaur(int posx, int posy, String name){
+        Minotaur(int posx, int posy, String name) {
             x = posx;
             y = posy;
             this.name = name;
         }
     }
 
-    public class Turn{
+    /**
+     * Turn class is intended for storing information about game turn of one player.
+     */
+    public class Turn {
         private Model.Direction moveDir;
         private Model.Direction shootDir;
+        private int id;
 
-        Turn(Model.Direction moveDirection, Model.Direction shootDirection) {
-            moveDir = moveDirection;
-            shootDir = shootDirection;
+        /**
+         * Turn class constructor.
+         *
+         * @param moveDirection  is enum description of players shot.
+         * @param shootDirection is enum description of players move.
+         * @param id             is id of this player.
+         */
+        Turn(Model.Direction moveDirection, Model.Direction shootDirection, int id) {
+            this.moveDir = moveDirection;
+            this.shootDir = shootDirection;
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public Model.Direction getMoveDir() {
+            return moveDir;
+        }
+
+        public Model.Direction getShootDir() {
+            return shootDir;
         }
     }
-
-
-    /**
-     * findPlayerByPosition method, returns player whose position is (x, y) or null if such player
-     * doesn't exist.
-     * @param x is x-coordinate of field on which we are looking for a Player.
-     * @param y is y-coordinate of field on which we are looking for a Player.
-     * @return player located by given coordinates or null if such player doesn't exist.
-     */
 }
