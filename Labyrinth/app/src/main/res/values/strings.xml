@@ -1,6 +1,9 @@
 <resources>
-    <string name="app_name">FieldApp</string>
+    <string name="app_name">Labyrinth</string>
     <string name="next_turn">Next Turn</string>
-    <string name="log">Log</string>
+    <string name="start_local">Start game</string>
     <string name="back">Back</string>
+    <string name="log_caption">Log</string>
+    <string name="next_player"> &gt; </string>
+    <string name="prev_player"> &lt; </string>
 </resources>
