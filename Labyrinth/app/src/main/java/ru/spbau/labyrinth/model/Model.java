@@ -78,7 +78,7 @@ public class Model {
         return demoPlayer;
     }
 
-    public void processTurn(Turn turn) {
+    private void processTurn(Turn turn) {
         int index = turn.getId();
         int[] d = getPosChange(turn.getMoveDir());
         int newx = players[index].getX() + d[0];
@@ -108,6 +108,12 @@ public class Model {
         }
     }
 
+    /**
+     * processTurnMuliplayer method is intended for analysis one game turn.
+     *
+     * @param turns is array which describes each player turn.
+     * @return players array, which contains updated information.
+     */
     public Player[] processTurnMuliplayer(Turn[] turns) {
         for (Turn turn : turns) {
             processTurn(turn);
@@ -115,6 +121,15 @@ public class Model {
         return players;
     }
 
+
+    /**
+     * game model initial method.
+     *
+     * @param names     is array of players names.
+     * @param fieldSize is size of playing field.
+     * @return array of players, which contains basic information about players.
+     * Note: id for players will be in the same order as names are given.
+     */
     public Player[] init(String[] names, int fieldSize) {
         int n = players.length;
 
@@ -294,11 +309,21 @@ public class Model {
         }
     }
 
+    /**
+     * Turn class is intended for storing information about game turn of one player.
+     */
     public class Turn {
         private Model.Direction moveDir;
         private Model.Direction shootDir;
         private int id;
 
+        /**
+         * Turn class constructor.
+         *
+         * @param moveDirection  is enum description of players shot.
+         * @param shootDirection is enum description of players move.
+         * @param id             is id of this player.
+         */
         Turn(Model.Direction moveDirection, Model.Direction shootDirection, int id) {
             this.moveDir = moveDirection;
             this.shootDir = shootDirection;
