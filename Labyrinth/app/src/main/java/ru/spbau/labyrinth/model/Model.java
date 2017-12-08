@@ -138,7 +138,7 @@ public class Model {
      * Note: id for players will be in the same order as names are given.
      */
     public Player[] init(String[] names, int fieldSize) {
-        int n = players.length;
+        int n = names.length;
 
         Random rnd = new Random();
 
@@ -181,8 +181,8 @@ public class Model {
 
     private int[] generateRandomPosition(Random random) {
         int[] pos = new int[2];
-        pos[0] = random.nextInt() % field.getSize();
-        pos[1] = random.nextInt() % field.getSize();
+        pos[0] = Math.abs(random.nextInt()) % field.getSize();
+        pos[1] = Math.abs(random.nextInt()) % field.getSize();
         return pos;
     }
 
@@ -236,6 +236,7 @@ public class Model {
             this.initialX = x;
             this.initialY = y;
             this.name = name;
+            this.id = id;
             fieldView = new Field(Model.this.field.getSize());
             cartridgesCnt = 3;
 
@@ -323,7 +324,7 @@ public class Model {
     /**
      * Turn class is intended for storing information about game turn of one player.
      */
-    public class Turn {
+    public static class Turn {
         private Model.Direction moveDir;
         private Model.Direction shootDir;
         private int id;
@@ -335,7 +336,7 @@ public class Model {
          * @param shootDirection is enum description of players move.
          * @param id             is id of this player.
          */
-        Turn(Model.Direction moveDirection, Model.Direction shootDirection, int id) {
+        public Turn(Model.Direction moveDirection, Model.Direction shootDirection, int id) {
             this.moveDir = moveDirection;
             this.shootDir = shootDirection;
             this.id = id;

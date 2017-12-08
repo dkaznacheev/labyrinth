@@ -76,18 +76,19 @@
         app:layout_constraintTop_toBottomOf="@+id/outerScroll" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/cartridgesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="3"
-        app:layout_constraintTop_toTopOf="@+id/logButton"
-        android:layout_marginTop="0dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginBottom="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/shootDirView"
         android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="0dp"
+        android:text="3"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/shootDirView"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/logButton"
         app:layout_constraintVertical_bias="0.533" />
 
     <view
@@ -136,4 +137,19 @@
         android:text="@string/prev_player"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/currentPlayerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Player 1"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/prevPlayerButton"
+        app:layout_constraintRight_toLeftOf="@+id/nextPlayerButton"
+        app:layout_constraintTop_toTopOf="@+id/prevPlayerButton" />
 </android.support.constraint.ConstraintLayout>

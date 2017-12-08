@@ -24,6 +24,11 @@ public class FieldView extends View {
     private Paint paint;
     public float scrolledY = 0;
 
+    private final static int playerColors[] = new int[]{Color.RED,
+                                                        Color.BLUE,
+                                                        Color.GREEN,
+                                                        Color.YELLOW};
+
     Player myPlayer;
 
     public void scrollY (float y) {
@@ -169,7 +174,9 @@ public class FieldView extends View {
 
     private void drawPlayer(Canvas canvas) {
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.RED);
+
+        paint.setColor(playerColors[myPlayer.getId()]);
+
         int playerX = myPlayer.getX();
         int playerY = myPlayer.getY();
         canvas.drawCircle(CELL_SIZE * (MAZE_OFFSET_X + playerX) + CELL_SIZE / 2,
