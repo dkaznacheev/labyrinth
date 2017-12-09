@@ -22,7 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setPlayerView(FieldView fieldView,
                                TextView cartridgesTextView,
-                               TextView currentPlayerNameTextView) {
+                               TextView currentPlayerNameTextView,
+                               OuterScrollView outerScrollView,
+                               HorizontalScrollView horizontalScrollView) {
         fieldView.updatePlayer(players[currentDrawnPlayerNum]);
 
         cartridgesTextView.setText(Integer.toString(players[currentDrawnPlayerNum].getCartridgesCnt()));
@@ -34,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
             cartridgesTextView.setTypeface(null, Typeface.NORMAL);
             currentPlayerNameTextView.setTypeface(null, Typeface.NORMAL);
         }
+        int toScrollX = 3 + (players[currentDrawnPlayerNum].getX() - players[currentDrawnPlayerNum].getInitialX());
+        int toScrollY = 3 + (players[currentDrawnPlayerNum].getY() - players[currentDrawnPlayerNum].getInitialY());
+        outerScrollView.scrollTo(0, toScrollY * 200 + 50);
+        horizontalScrollView.scrollTo(toScrollX * 200 + 50, 0);
     }
 
     @Override
@@ -60,8 +66,11 @@ public class MainActivity extends AppCompatActivity {
         final Model model = new Model();
         players = model.init(names, 5);
 
-        setPlayerView(fieldView, cartridgesTextView, currentPlayerNameTextView);
-
+        setPlayerView(fieldView,
+                cartridgesTextView,
+                currentPlayerNameTextView,
+                outerScrollView,
+                horizontalScrollView);
         //fieldView.updatePlayer(model.demoInit());
         turns = new Model.Turn[PLAYER_NUM];
 
@@ -87,8 +96,11 @@ public class MainActivity extends AppCompatActivity {
                 //textView.setText(Integer.toString(player.getCartridgesCnt()));
 
                 currentDrawnPlayerNum = currentPlayerNum;
-                setPlayerView(fieldView, cartridgesTextView, currentPlayerNameTextView);
-            }
+                setPlayerView(fieldView,
+                        cartridgesTextView,
+                        currentPlayerNameTextView,
+                        outerScrollView,
+                        horizontalScrollView);            }
         });
 
         Button logButton = (Button) findViewById(R.id.logButton);
@@ -109,8 +121,11 @@ public class MainActivity extends AppCompatActivity {
                     currentDrawnPlayerNum = PLAYER_NUM - 1;
                 }
 
-                setPlayerView(fieldView, cartridgesTextView, currentPlayerNameTextView);
-            }
+                setPlayerView(fieldView,
+                        cartridgesTextView,
+                        currentPlayerNameTextView,
+                        outerScrollView,
+                        horizontalScrollView);            }
         });
 
         Button nextPlayerButton = (Button) findViewById(R.id.nextPlayerButton);
@@ -122,7 +137,11 @@ public class MainActivity extends AppCompatActivity {
                     currentDrawnPlayerNum = 0;
                 }
 
-                setPlayerView(fieldView, cartridgesTextView, currentPlayerNameTextView);
+                setPlayerView(fieldView,
+                              cartridgesTextView,
+                              currentPlayerNameTextView,
+                              outerScrollView,
+                              horizontalScrollView);
             }
         });
 

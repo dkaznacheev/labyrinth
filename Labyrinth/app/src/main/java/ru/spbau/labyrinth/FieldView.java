@@ -19,8 +19,10 @@ public class FieldView extends View {
     private static final int FIELD_WIDTH = 2000;
     private static final int FIELD_HEIGHT = 2000;
     private static final int CELL_SIZE = 200;
-    private static final int MAZE_OFFSET_X = 3;
-    private static final int MAZE_OFFSET_Y = 3;
+    private static final int MAZE_OFFSET_X = 5;
+    private static final int MAZE_OFFSET_Y = 5;
+    private int offsetX;
+    private int offsetY;
     private Paint paint;
     public float scrolledY = 0;
 
@@ -92,8 +94,8 @@ public class FieldView extends View {
         int fieldSize = 5;
         for (int i = 0; i < fieldSize; i++)
             for (int j = 0; j <  fieldSize; j++) {
-                int cellX = j + MAZE_OFFSET_X;
-                int cellY = i + MAZE_OFFSET_Y;
+                int cellX = j + offsetX;
+                int cellY = i + offsetY;
                 switch (myPlayer.getFieldState(j, i)) {
                     case NOTHING: {
                         paint.setColor(Color.WHITE);
@@ -137,8 +139,8 @@ public class FieldView extends View {
         for (int i = 0; i < fieldSize + 1; i++) {
             for (int j = 0; j < fieldSize; j++) {
 
-                int cellX = j + MAZE_OFFSET_X;
-                int cellY = i + MAZE_OFFSET_Y;
+                int cellX = j + offsetX;
+                int cellY = i + offsetY;
                 if (myPlayer.getFieldBorderX(i, j)) {
                     canvas.drawLine(CELL_SIZE * cellX,
                             CELL_SIZE * cellY,
@@ -152,8 +154,8 @@ public class FieldView extends View {
         for (int i = 0; i < fieldSize; i++) {
             for (int j = 0; j < fieldSize + 1; j++) {
 
-                int cellX = j + MAZE_OFFSET_X;
-                int cellY = i + MAZE_OFFSET_Y;
+                int cellX = j + offsetX;
+                int cellY = i + offsetY;
                 if (myPlayer.getFieldBorderY(i, j)) {
                     canvas.drawLine(CELL_SIZE * cellX,
                             CELL_SIZE * cellY,
@@ -179,8 +181,8 @@ public class FieldView extends View {
 
         int playerX = myPlayer.getX();
         int playerY = myPlayer.getY();
-        canvas.drawCircle(CELL_SIZE * (MAZE_OFFSET_X + playerX) + CELL_SIZE / 2,
-                          CELL_SIZE * (MAZE_OFFSET_Y + playerY) + CELL_SIZE / 2,
+        canvas.drawCircle(CELL_SIZE * (offsetX + playerX) + CELL_SIZE / 2,
+                          CELL_SIZE * (offsetY + playerY) + CELL_SIZE / 2,
                           CELL_SIZE/3, paint);
     }
 
@@ -215,6 +217,8 @@ public class FieldView extends View {
 
     public void updatePlayer(Player newPlayer) {
         myPlayer = newPlayer;
+        offsetX = MAZE_OFFSET_X - myPlayer.getInitialX();
+        offsetY = MAZE_OFFSET_Y - myPlayer.getInitialY();
         invalidate();
     }
 
