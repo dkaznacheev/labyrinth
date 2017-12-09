@@ -6,4 +6,8 @@
     <string name="log_caption">Log</string>
     <string name="next_player"> &gt; </string>
     <string name="prev_player"> &lt; </string>
+    <string name="new_game"> New Game </string>
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="ready">Ready!</string>
 </resources>

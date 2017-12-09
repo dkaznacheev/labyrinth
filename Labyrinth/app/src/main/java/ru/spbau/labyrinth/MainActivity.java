@@ -12,29 +12,36 @@ import android.widget.TextView;
 import ru.spbau.labyrinth.model.Model;
 
 public class MainActivity extends AppCompatActivity {
-    final  int PLAYER_NUM = 2;
 
+    private int playerNum;
     private Model.Player[] players;
     private Model.Turn[] turns;
     private String[] names;
-    private int currentPlayerNum = 0;
-    private int currentDrawnPlayerNum = 0;
+    private int currentPlayerNum;
+    private int currentDrawnPlayerNum;
+    private Model model;
+    private boolean dirtyHack = true;
 
-    private void setPlayerView(FieldView fieldView,
-                               TextView cartridgesTextView,
-                               TextView currentPlayerNameTextView,
-                               OuterScrollView outerScrollView,
-                               HorizontalScrollView horizontalScrollView) {
-        fieldView.updatePlayer(players[currentDrawnPlayerNum]);
+    private void setPlayerView() {
+
+        final OuterScrollView outerScrollView = (OuterScrollView) findViewById(R.id.outerScroll);
+        final HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScroll);
+        final DirectionChooseView moveDirectionChooseView = (DirectionChooseView) findViewById(R.id.moveDirView);
+        final DirectionChooseView shootDirectionChooseView = (DirectionChooseView) findViewById(R.id.shootDirView);
+        final FieldView fieldView = (FieldView) findViewById(R.id.fieldView);
+        final TextView cartridgesTextView = (TextView) findViewById(R.id.cartridgesTextView);
+        final TextView currentPlayerNameTextView = (TextView) findViewById(R.id.currentPlayerName);
 
         cartridgesTextView.setText(Integer.toString(players[currentDrawnPlayerNum].getCartridgesCnt()));
         currentPlayerNameTextView.setText(names[currentDrawnPlayerNum]);
         if (currentDrawnPlayerNum == currentPlayerNum) {
             cartridgesTextView.setTypeface(null, Typeface.BOLD);
             currentPlayerNameTextView.setTypeface(null, Typeface.BOLD);
+            fieldView.updatePlayer(players[currentDrawnPlayerNum], moveDirectionChooseView.getDirection(), shootDirectionChooseView.getDirection());
         } else {
             cartridgesTextView.setTypeface(null, Typeface.NORMAL);
             currentPlayerNameTextView.setTypeface(null, Typeface.NORMAL);
+            fieldView.updatePlayer(players[currentDrawnPlayerNum], Model.Direction.NONE, Model.Direction.NONE);
         }
         int toScrollX = 3 + (players[currentDrawnPlayerNum].getX() - players[currentDrawnPlayerNum].getInitialX());
         int toScrollY = 3 + (players[currentDrawnPlayerNum].getY() - players[currentDrawnPlayerNum].getInitialY());
@@ -42,11 +49,33 @@ public class MainActivity extends AppCompatActivity {
         horizontalScrollView.scrollTo(toScrollX * 200 + 50, 0);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    /*void initialize() {
+        names = new String[playerNum];
+        names[0] = "Player 1";
+        names[1] = "Player 2";
 
-        setContentView(R.layout.activity_main);
+        model = new Model();
+        players = model.init(names, 5);
+
+        turns = new Model.Turn[playerNum];
+
+        currentPlayerNum = 0;
+        currentDrawnPlayerNum = 0;
+
+    }
+*/
+
+    private void killActivity() {
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null || resultCode != RESULT_OK) {
+            killActivity();
+            return;
+        }
+
         final OuterScrollView outerScrollView = (OuterScrollView) findViewById(R.id.outerScroll);
         final HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScroll);
         outerScrollView.horizontalScrollView = horizontalScrollView;
@@ -55,24 +84,24 @@ public class MainActivity extends AppCompatActivity {
         final DirectionChooseView shootDirectionChooseView = (DirectionChooseView) findViewById(R.id.shootDirView);
 
         Button nextTurnButton = (Button) findViewById(R.id.nextTurnButton);
-        final FieldView fieldView = (FieldView) findViewById(R.id.fieldView);
-        final TextView cartridgesTextView = (TextView) findViewById(R.id.cartridgesTextView);
-        final TextView currentPlayerNameTextView = (TextView) findViewById(R.id.currentPlayerName);
 
-        names = new String[PLAYER_NUM];
-        names[0] = "Player 1";
-        names[1] = "Player 2";
+        playerNum = data.getIntExtra("playerNum", 0);
 
-        final Model model = new Model();
+        String name = data.getStringExtra("player"+Integer.toString(0));
+        names = new String[playerNum];
+        for (int i = 0; i < playerNum; i++) {
+            names[i] = data.getStringExtra("player"+Integer.toString(i));
+        }
+
+        model = new Model();
         players = model.init(names, 5);
 
-        setPlayerView(fieldView,
-                cartridgesTextView,
-                currentPlayerNameTextView,
-                outerScrollView,
-                horizontalScrollView);
-        //fieldView.updatePlayer(model.demoInit());
-        turns = new Model.Turn[PLAYER_NUM];
+        turns = new Model.Turn[playerNum];
+
+        currentPlayerNum = 0;
+        currentDrawnPlayerNum = 0;
+
+        setPlayerView();
 
         nextTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,21 +115,15 @@ public class MainActivity extends AppCompatActivity {
                 turns[currentPlayerNum] = turn;
 
                 currentPlayerNum++;
-                if (currentPlayerNum == PLAYER_NUM) {
+                if (currentPlayerNum == playerNum) {
                     players = model.processTurnMuliplayer(turns);
-                    turns = new Model.Turn[PLAYER_NUM];
+                    turns = new Model.Turn[playerNum];
                     currentPlayerNum = 0;
                 }
-                //Model.Player player = model.demoProcessTurn(moveDirectionChooseView.getDirection(), shootDirectionChooseView.getDirection());
-                //fieldView.updatePlayer(player);
-                //textView.setText(Integer.toString(player.getCartridgesCnt()));
 
                 currentDrawnPlayerNum = currentPlayerNum;
-                setPlayerView(fieldView,
-                        cartridgesTextView,
-                        currentPlayerNameTextView,
-                        outerScrollView,
-                        horizontalScrollView);            }
+                setPlayerView();
+            }
         });
 
         Button logButton = (Button) findViewById(R.id.logButton);
@@ -118,14 +141,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 currentDrawnPlayerNum--;
                 if (currentDrawnPlayerNum < 0) {
-                    currentDrawnPlayerNum = PLAYER_NUM - 1;
+                    currentDrawnPlayerNum = playerNum - 1;
                 }
 
-                setPlayerView(fieldView,
-                        cartridgesTextView,
-                        currentPlayerNameTextView,
-                        outerScrollView,
-                        horizontalScrollView);            }
+                setPlayerView();
+            }
         });
 
         Button nextPlayerButton = (Button) findViewById(R.id.nextPlayerButton);
@@ -133,15 +153,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentDrawnPlayerNum++;
-                if (currentDrawnPlayerNum >= PLAYER_NUM) {
+                if (currentDrawnPlayerNum >= playerNum) {
                     currentDrawnPlayerNum = 0;
                 }
 
-                setPlayerView(fieldView,
-                              cartridgesTextView,
-                              currentPlayerNameTextView,
-                              outerScrollView,
-                              horizontalScrollView);
+                setPlayerView();
             }
         });
 
@@ -155,7 +171,18 @@ public class MainActivity extends AppCompatActivity {
                 horizontalScrollView.scrollTo(650, 0);
             }
         });
-
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null) {
+            Intent intent = new Intent(this, InitActivity.class);
+            startActivityForResult(intent, 1);
+        }
+
+    }
 }

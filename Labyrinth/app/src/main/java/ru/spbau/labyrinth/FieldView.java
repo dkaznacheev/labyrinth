@@ -215,7 +215,7 @@ public class FieldView extends View {
         drawPlayer(canvas);
     }
 
-    public void updatePlayer(Player newPlayer) {
+    public void updatePlayer(Player newPlayer, Model.Direction moveDir, Model.Direction shootDir) {
         myPlayer = newPlayer;
         offsetX = MAZE_OFFSET_X - myPlayer.getInitialX();
         offsetY = MAZE_OFFSET_Y - myPlayer.getInitialY();
