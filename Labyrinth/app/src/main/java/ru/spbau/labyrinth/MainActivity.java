@@ -20,9 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private int currentPlayerNum;
     private int currentDrawnPlayerNum;
     private Model model;
-    private boolean dirtyHack = true;
 
-    private void setPlayerView() {
+    private void setPlayerView(boolean scroll) {
 
         final OuterScrollView outerScrollView = (OuterScrollView) findViewById(R.id.outerScroll);
         final HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScroll);
@@ -45,25 +44,11 @@ public class MainActivity extends AppCompatActivity {
         }
         int toScrollX = 3 + (players[currentDrawnPlayerNum].getX() - players[currentDrawnPlayerNum].getInitialX());
         int toScrollY = 3 + (players[currentDrawnPlayerNum].getY() - players[currentDrawnPlayerNum].getInitialY());
-        outerScrollView.scrollTo(0, toScrollY * 200 + 50);
-        horizontalScrollView.scrollTo(toScrollX * 200 + 50, 0);
+        if (scroll) {
+            outerScrollView.scrollTo(0, toScrollY * 200 + 50);
+            horizontalScrollView.scrollTo(toScrollX * 200 + 50, 0);
+        }
     }
-
-    /*void initialize() {
-        names = new String[playerNum];
-        names[0] = "Player 1";
-        names[1] = "Player 2";
-
-        model = new Model();
-        players = model.init(names, 5);
-
-        turns = new Model.Turn[playerNum];
-
-        currentPlayerNum = 0;
-        currentDrawnPlayerNum = 0;
-
-    }
-*/
 
     private void killActivity() {
         finish();
@@ -101,7 +86,22 @@ public class MainActivity extends AppCompatActivity {
         currentPlayerNum = 0;
         currentDrawnPlayerNum = 0;
 
-        setPlayerView();
+        setPlayerView(true);
+
+        moveDirectionChooseView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPlayerView(false);
+            }
+        });
+
+
+       shootDirectionChooseView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPlayerView(false);
+            }
+        });
 
         nextTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 currentDrawnPlayerNum = currentPlayerNum;
-                setPlayerView();
+                setPlayerView(true);
             }
         });
 
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                     currentDrawnPlayerNum = playerNum - 1;
                 }
 
-                setPlayerView();
+                setPlayerView(true);
             }
         });
 
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     currentDrawnPlayerNum = 0;
                 }
 
-                setPlayerView();
+                setPlayerView(true);
             }
         });
 
