@@ -1,5 +1,7 @@
 package ru.spbau.labyrinth.model.field;
 
+import com.google.gson.Gson;
+
 import java.util.Arrays;
 
 import ru.spbau.labyrinth.model.Model.Player;
@@ -66,4 +68,17 @@ public class Field {
     public void addObject(){
         /* TODO */
     }
+
+    public static String serialize(Field field) {
+        Gson gson = new Gson();
+        String json = gson.toJson(field);
+        return json;
+    }
+
+    public static Field deserialize(String json) {
+        Gson gson = new Gson();
+        Field field = gson.fromJson(json, Field.class);
+        return field;
+    }
+
 }

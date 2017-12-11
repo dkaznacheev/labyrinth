@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 setPlayerView(false);
             }
-        });
+       });
 
         nextTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,12 +139,12 @@ public class MainActivity extends AppCompatActivity {
         prevPlayerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentDrawnPlayerNum--;
-                if (currentDrawnPlayerNum < 0) {
-                    currentDrawnPlayerNum = playerNum - 1;
-                }
+            currentDrawnPlayerNum--;
+            if (currentDrawnPlayerNum < 0) {
+                currentDrawnPlayerNum = playerNum - 1;
+            }
 
-                setPlayerView(true);
+            setPlayerView(true);
             }
         });
 

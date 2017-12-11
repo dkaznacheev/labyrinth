@@ -1,5 +1,7 @@
 package ru.spbau.labyrinth.model;
 
+import com.google.gson.Gson;
+
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -352,6 +354,18 @@ public class Model {
 
         public Model.Direction getShootDir() {
             return shootDir;
+        }
+
+        public static String serialize(Turn turn) {
+            Gson gson = new Gson();
+            String json = gson.toJson(turn);
+            return json;
+        }
+
+        public static Turn deserialize(String json) {
+            Gson gson = new Gson();
+            Turn turn = gson.fromJson(json, Turn.class);
+            return turn;
         }
     }
 }
