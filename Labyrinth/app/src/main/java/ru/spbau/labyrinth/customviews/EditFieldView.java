@@ -1,34 +1,25 @@
 package ru.spbau.labyrinth.customviews;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageButton;
 
-import java.util.ArrayList;
 
+import ru.spbau.labyrinth.R;
 import ru.spbau.labyrinth.model.field.Field;
+import ru.spbau.labyrinth.model.field.Field.State;
 
 
 public class EditFieldView extends FieldView {
     private static final int PRECISION = 35;
-
-    private static class Point {
-        float x;
-        float y;
-
-        public Point(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    private ArrayList<Point> points;
+    private State cellState = State.NOTHING;
     private Paint paint;
 
     public EditFieldView(Context context) {
@@ -38,7 +29,6 @@ public class EditFieldView extends FieldView {
 
     private void init() {
         field = new Field(10);
-        points = new ArrayList<>();
         paint = new Paint();
         setOnTouchListener(touchListener);
     }
@@ -72,18 +62,47 @@ public class EditFieldView extends FieldView {
     }
 
 
-    void processClick(float x, float y) {
+    void chooseState(int x, int y) {
+        final int fx = x;
+        final int fy = y;
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
 
-        points.add(new Point(x, y));
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+
+        View dialogView= inflater.inflate(R.layout.dialog_choosecell, null);
+        dialogBuilder.setView(dialogView);
+
+        ImageButton bullButton = (ImageButton)dialogView.findViewById(R.id.bullButton);
+        ImageButton nothingButton = (ImageButton)dialogView.findViewById(R.id.nothingButton);
+
+        final AlertDialog alertDialog = dialogBuilder.create();
+
+        bullButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                field.setState(fx, fy, State.MINOTAUR);
+                invalidate();
+                alertDialog.dismiss();
+            }
+        });
+
+        nothingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                field.setState(fx, fy, State.NOTHING);
+                invalidate();
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
+    }
+
+    void processClick(float x, float y) {
         if (touchedCell(x, y)) {
             int fx = (int) x / CELL_SIZE;
             int fy = (int) y / CELL_SIZE;
-            if (field.getState(fx, fy) == Field.State.NOTHING)
-                field.setState(fx, fy, Field.State.MINOTAUR);
-            else
-                field.setState(fx, fy, Field.State.NOTHING);
-            //Toast.makeText(getContext(), Integer.toString(fx) + " " + Integer.toString(fy), Toast.LENGTH_SHORT).show();
-
+            chooseState(fx, fy);
         }
         else if (touchedVerticalWall(x, y)){
             int wx = ((int) x + PRECISION + 1) / CELL_SIZE;
@@ -94,7 +113,6 @@ public class EditFieldView extends FieldView {
             int wx = ((int) x + PRECISION + 1) / CELL_SIZE;
             int wy = ((int) y + PRECISION + 1)/ CELL_SIZE;
             field.setBorderX(wy, wx, !field.hasBorderX(wy, wx));
-
         }
 
     }
@@ -122,16 +140,9 @@ public class EditFieldView extends FieldView {
         }
     };
 
-    private void drawDots(Canvas canvas) {
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.RED);
-        for (int i = 0; i < points.size(); i++)
-            canvas.drawCircle(points.get(i).x, points.get(i).y, 10, paint);
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        drawDots(canvas);
     }
 }
