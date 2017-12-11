@@ -10,4 +10,7 @@
     <string name="add">Add</string>
     <string name="delete">Delete</string>
     <string name="ready">Ready!</string>
+    <string name="load">Load</string>
+    <string name="save">Save</string>
+    <string name="field_editor">Field Editor</string>
 </resources>

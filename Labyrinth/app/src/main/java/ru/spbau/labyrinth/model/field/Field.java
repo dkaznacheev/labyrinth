@@ -54,6 +54,14 @@ public class Field {
         borderY[row][column] = true;
     }
 
+    public void setBorderX(int row, int column, boolean value){
+        borderX[row][column] = value;
+    }
+
+    public void setBorderY(int row, int column, boolean value){
+        borderY[row][column] = value;
+    }
+
     public boolean hasBorderX(int row, int column) {
         return borderX[row][column];
     }

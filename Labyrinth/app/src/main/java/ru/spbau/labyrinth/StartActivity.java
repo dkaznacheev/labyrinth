@@ -20,6 +20,14 @@ public class StartActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        Button editorButton = (Button)findViewById(R.id.editorButton);
+        editorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(StartActivity.this, EditorActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 }

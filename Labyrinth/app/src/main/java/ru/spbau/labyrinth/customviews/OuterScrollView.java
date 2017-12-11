@@ -1,10 +1,13 @@
-package ru.spbau.labyrinth;
+package ru.spbau.labyrinth.customviews;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
+
+import ru.spbau.labyrinth.R;
+import ru.spbau.labyrinth.customviews.FieldView;
 
 public class OuterScrollView extends ScrollView {
     public HorizontalScrollView horizontalScrollView;

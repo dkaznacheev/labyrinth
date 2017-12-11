@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
+import ru.spbau.labyrinth.customviews.DirectionChooseView;
+import ru.spbau.labyrinth.customviews.OuterScrollView;
+import ru.spbau.labyrinth.customviews.PlayerFieldView;
 import ru.spbau.labyrinth.model.Model;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         final HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScroll);
         final DirectionChooseView moveDirectionChooseView = (DirectionChooseView) findViewById(R.id.moveDirView);
         final DirectionChooseView shootDirectionChooseView = (DirectionChooseView) findViewById(R.id.shootDirView);
-        final FieldView fieldView = (FieldView) findViewById(R.id.fieldView);
+        final PlayerFieldView fieldView = (PlayerFieldView) findViewById(R.id.fieldView);
         final TextView cartridgesTextView = (TextView) findViewById(R.id.cartridgesTextView);
         final TextView currentPlayerNameTextView = (TextView) findViewById(R.id.currentPlayerName);
 

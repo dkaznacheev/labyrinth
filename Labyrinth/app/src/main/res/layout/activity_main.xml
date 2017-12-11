@@ -12,14 +12,14 @@
         android:layout_width="900dp"
         android:layout_height="900dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.39"
+        app:layout_constraintVertical_bias="0.443"
         app:srcCompat="@drawable/labyrinth" />
 
-    <ru.spbau.labyrinth.OuterScrollView
+    <ru.spbau.labyrinth.customviews.OuterScrollView
         android:id="@+id/outerScroll"
         android:layout_width="350dp"
         android:layout_height="350dp"
@@ -41,7 +41,7 @@
 
             <view
                 android:id="@+id/fieldView"
-                class="ru.spbau.labyrinth.FieldView"
+                class="ru.spbau.labyrinth.customviews.PlayerFieldView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"
@@ -50,7 +50,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </HorizontalScrollView>
-    </ru.spbau.labyrinth.OuterScrollView>
+    </ru.spbau.labyrinth.customviews.OuterScrollView>
 
 
     <Button
@@ -93,7 +93,7 @@
 
     <view
         android:id="@+id/moveDirView"
-        class="ru.spbau.labyrinth.DirectionChooseView"
+        class="ru.spbau.labyrinth.customviews.DirectionChooseView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginLeft="15dp"
@@ -104,7 +104,7 @@
 
     <view
         android:id="@+id/shootDirView"
-        class="ru.spbau.labyrinth.DirectionChooseView"
+        class="ru.spbau.labyrinth.customviews.DirectionChooseView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="8dp"

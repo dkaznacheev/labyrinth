@@ -310,6 +310,10 @@ public class Model {
         public int getInitialY() {
             return initialY;
         }
+
+        public Field getField() {
+            return fieldView;
+        }
     }
 
     public class Minotaur {

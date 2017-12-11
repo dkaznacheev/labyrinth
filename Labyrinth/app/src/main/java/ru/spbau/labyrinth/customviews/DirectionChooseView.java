@@ -1,4 +1,4 @@
-package ru.spbau.labyrinth;
+package ru.spbau.labyrinth.customviews;
 
 import android.content.Context;
 import android.graphics.Canvas;
