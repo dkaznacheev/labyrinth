@@ -2,23 +2,60 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/nothingButton"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="start"
-        android:layout_weight="1"
-        android:cropToPadding="false"
-        app:srcCompat="@drawable/nothing" />
+        <ImageButton
+            android:id="@+id/hospitalButton"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:elevation="24dp"
+            app:srcCompat="@drawable/hospital" />
 
-    <ImageButton
-        android:id="@+id/bullButton"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="end"
-        android:layout_weight="1"
-        android:cropToPadding="false"
-        app:srcCompat="@drawable/bull" />
+        <ImageButton
+            android:id="@+id/nothingButton"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:cropToPadding="false"
+            android:elevation="24dp"
+            app:srcCompat="@drawable/nothing" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/treasureButton"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:elevation="24dp"
+            app:srcCompat="@drawable/treasure" />
+
+        <ImageButton
+            android:id="@+id/bullButton"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:cropToPadding="false"
+            android:elevation="24dp"
+            app:srcCompat="@drawable/bull" />
+    </LinearLayout>
+
 </LinearLayout>

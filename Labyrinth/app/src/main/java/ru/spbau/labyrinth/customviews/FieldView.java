@@ -28,8 +28,8 @@ public class FieldView extends View {
     private Paint paint;
     Bitmap minotaurBmp;
     Bitmap hospitalBmp;
-    private int treasureX;
-    private int treasureY;
+    private int treasureX = -1;
+    private int treasureY = -1;
 
     public float scrolledY = 0;
 

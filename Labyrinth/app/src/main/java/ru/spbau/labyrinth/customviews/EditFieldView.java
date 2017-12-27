@@ -71,11 +71,13 @@ public class EditFieldView extends FieldView {
 
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
-        View dialogView= inflater.inflate(R.layout.dialog_choosecell, null);
+        View dialogView = inflater.inflate(R.layout.dialog_choosecell, null);
         dialogBuilder.setView(dialogView);
 
         ImageButton bullButton = (ImageButton)dialogView.findViewById(R.id.bullButton);
         ImageButton nothingButton = (ImageButton)dialogView.findViewById(R.id.nothingButton);
+        ImageButton hospitalButton = (ImageButton)dialogView.findViewById(R.id.hospitalButton);
+        ImageButton treasureButton = (ImageButton)dialogView.findViewById(R.id.treasureButton);
 
         final AlertDialog alertDialog = dialogBuilder.create();
 
@@ -92,6 +94,30 @@ public class EditFieldView extends FieldView {
             @Override
             public void onClick(View view) {
                 field.setState(fx, fy, State.NOTHING);
+                invalidate();
+                alertDialog.dismiss();
+            }
+        });
+
+        hospitalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (int i = 0; i < field.getSize(); i++)
+                    for (int j = 0; j < field.getSize(); j++) {
+                        if (field.getState(i, j) == State.HOSPITAL)
+                            field.setState(i, j, State.NOTHING);
+                    }
+                field.setState(fx, fy, State.HOSPITAL);
+                invalidate();
+                alertDialog.dismiss();
+            }
+        });
+
+        treasureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                field.setTreasurePos(fx, fy);
+                updateTreasure(fx, fy);
                 invalidate();
                 alertDialog.dismiss();
             }
