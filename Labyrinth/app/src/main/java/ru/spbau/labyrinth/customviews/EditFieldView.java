@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.ImageButton;
 
 
+import com.google.gson.Gson;
+
 import ru.spbau.labyrinth.R;
 import ru.spbau.labyrinth.model.field.Field;
 import ru.spbau.labyrinth.model.field.Field.State;
@@ -144,5 +146,17 @@ public class EditFieldView extends FieldView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+    }
+
+    public static String serialize(EditFieldView editFieldView) {
+        Gson gson = new Gson();
+        String json = gson.toJson(editFieldView);
+        return json;
+    }
+
+    public static EditFieldView deserialize(String json) {
+        Gson gson = new Gson();
+        EditFieldView editFieldView = gson.fromJson(json, EditFieldView.class);
+        return editFieldView;
     }
 }

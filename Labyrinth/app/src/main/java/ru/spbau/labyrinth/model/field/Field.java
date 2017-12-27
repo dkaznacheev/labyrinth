@@ -88,5 +88,4 @@ public class Field {
         Field field = gson.fromJson(json, Field.class);
         return field;
     }
-
 }
