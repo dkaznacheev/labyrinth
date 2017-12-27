@@ -11,10 +11,9 @@ import ru.spbau.labyrinth.model.field.*;
 public class Model {
     private Player[] players;
     private Field field;
+    private Set<Integer> killed = new HashSet<>();
 
     public enum Direction {UP, DOWN, LEFT, RIGHT, NONE}
-
-    ;
 
     //One player demo.
 
@@ -93,10 +92,6 @@ public class Model {
         int newx = players[index].getX() + d[0];
         int newy = players[index].getY() + d[1];
 
-        if (turn.getShootDir() != Direction.NONE) {
-            players[index].spendCartridge();
-        }
-
         if (newx == players[index].getX() && newy == players[index].getY()) {
             return;
         }
@@ -105,14 +100,47 @@ public class Model {
             players[index].setX(newx);
             players[index].setY(newy);
             if (players[index].getFieldState(newx, newy) == Field.State.UNKNOWN) {
-                players[index].setFieldState(newx, newy, Field.State.NOTHING);
+                if (field.getState(newx, newy) == Field.State.HOSPITAL) {
+                    players[index].setFieldState(newx, newy, Field.State.HOSPITAL);
+                } else if (field.getState(newx, newy) == Field.State.MINOTAUR) {
+                    players[index].setFieldState(newx, newy, Field.State.MINOTAUR);
+                }
+            }
+
+            if (field.getTreasureOwner() == index) {
+                field.setTreasurePos(newx, newy);
+            }
+
+            //TODO what if several number of players stepped on the cell with treasure in the same time
+            if (newx == field.getTreasureX() && newy == field.getTreasureY() && field.getTreasureOwner() == -1) {
+                field.setTreasureOwner(index);
+            }
+
+            if (field.getState(newx, newy) == Field.State.MINOTAUR) {
+                field.setTreasureOwner(-1);
+                players[index].setX(field.getHospitalX());
+                players[index].setY(field.getHospitalY());
             }
         } else {
             int ind[] = getBorderInd(players[index].getX(), players[index].getY(), newx, newy);
-            if (ind[0] == 0) {
-                players[index].setFieldBorderX(ind[1], ind[2]);
-            } else {
-                players[index].setFieldBorderY(ind[1], ind[2]);
+            if (index == field.getTreasureOwner()) {
+                if (ind[0] == 0) {
+                    if (field.isExitBorderX(ind[1], ind[2])) {
+                        players[index].markThatPlayerWin();
+                    }
+                } else {
+                    if (field.isExitBorderY(ind[1], ind[2])) {
+                        players[index].markThatPlayerWin();
+                    }
+                }
+            }
+
+            if (!players[index].playerWin) {
+                if (ind[0] == 0) {
+                    players[index].setFieldBorderX(ind[1], ind[2]);
+                } else {
+                    players[index].setFieldBorderY(ind[1], ind[2]);
+                }
             }
         }
     }
@@ -124,12 +152,67 @@ public class Model {
      * @return players array, which contains updated information.
      */
     public Player[] processTurnMuliplayer(Turn[] turns) {
+        killed.clear();
         for (Turn turn : turns) {
-            processTurn(turn);
+            checkShoots(turn);
+        }
+
+        for (Integer killedId : killed) {
+            if (killedId == field.getTreasureOwner()) {
+                field.setTreasurePos(players[killedId].getX(), players[killedId].getY());
+                field.setTreasureOwner(-1);
+            }
+            players[killedId].setX(field.getHospitalX());
+            players[killedId].setY(field.getHospitalY());
+        }
+
+        for (Turn turn : turns) {
+            if (!killed.contains(turn.getId())) {
+                processTurn(turn);
+            }
         }
         return players;
     }
 
+    private void checkShoots(Turn turn) {
+        if (turn.getShootDir() == Direction.NONE || !players[turn.getId()].hasCatridge()) {
+            return;
+        }
+        players[turn.getId()].spendCartridge();
+
+        int curPosX = players[turn.getId()].getX();
+        int curPosY = players[turn.getId()].getY();
+
+        int[] d = getPosChange(turn.getShootDir());
+        while (field.cellIsInField(curPosX, curPosY)) {
+            int newX = curPosX + d[0];
+            int newY = curPosY + d[1];
+            if (field.cellIsInField(newX, newY) && !isBorder(curPosX, curPosY, newX, newY)) {
+                curPosX = newX;
+                curPosY = newY;
+            } else {
+                break;
+            }
+
+            boolean someoneKilled = false;
+            for (Player player : players) {
+                if (player.getX() == curPosX && player.getY() == curPosY) {
+                    killed.add(player.getId());
+                    someoneKilled = true;
+                    break;
+                }
+            }
+
+            if (field.getState(curPosX, curPosY) == Field.State.MINOTAUR) {
+                field.setState(curPosX, curPosY, Field.State.NOTHING);
+                someoneKilled = true;
+            }
+
+            if (someoneKilled) {
+                break;
+            }
+        }
+    }
 
     /**
      * game model initial method.
@@ -162,8 +245,20 @@ public class Model {
         while (st.contains(pos[0] * fieldSize + pos[1])) {
             pos = generateRandomPosition(rnd);
         }
-
         field.setState(pos[0], pos[1], Field.State.MINOTAUR);
+
+        while (st.contains(pos[0] * fieldSize + pos[1])) {
+            pos = generateRandomPosition(rnd);
+        }
+        field.setState(pos[0], pos[1], Field.State.HOSPITAL);
+        field.setHospitalPos(pos[0], pos[1]);
+
+        while (st.contains(pos[0] * fieldSize + pos[1])) {
+            pos = generateRandomPosition(rnd);
+        }
+        field.setTreasurePos(pos[0], pos[1]);
+        field.setTreasureOwner(-1);
+
         return players;
     }
 
@@ -176,6 +271,18 @@ public class Model {
             f.addBorderX(fieldSize, i);
             f.addBorderY(i, 0);
             f.addBorderY(i, fieldSize);
+        }
+
+        int side = random.nextInt() % 4;
+        int pos = random.nextInt() % fieldSize;
+        if (side == 0) {
+            f.setBorderPos(0, 0, pos);
+        } else if (side == 2) {
+            f.setBorderPos(0, fieldSize, pos);
+        } else if (side == 1) {
+            f.setBorderPos(1, pos, 0);
+        } else {
+            f.setBorderPos(1, pos, fieldSize);
         }
 
         return f;
@@ -231,6 +338,8 @@ public class Model {
         private int initialX, initialY;
         private String name;
         private Field fieldView;
+        private boolean hasTreasure;
+        private boolean playerWin;
 
         Player(int posx, int posy, String name, int id) {
             this.x = posx;
@@ -241,6 +350,7 @@ public class Model {
             this.id = id;
             fieldView = new Field(Model.this.field.getSize());
             cartridgesCnt = 3;
+            hasTreasure = false;
 
             for (int i = 0; i < fieldView.getSize(); i++) {
                 for (int j = 0; j < fieldView.getSize(); j++) {
@@ -249,6 +359,14 @@ public class Model {
             }
 
             fieldView.setState(x, y, Field.State.NOTHING);
+        }
+
+        public boolean hasTreasure() {
+            return hasTreasure;
+        }
+
+        public void changeTreasureOwningState(boolean isTreasureOwner) {
+            hasTreasure = isTreasureOwner;
         }
 
         public int getX() {
@@ -265,6 +383,10 @@ public class Model {
 
         public void setY(int y) {
             this.y = y;
+        }
+
+        public boolean hasCatridge() {
+            return cartridgesCnt > 0;
         }
 
         public void spendCartridge() {
@@ -313,6 +435,10 @@ public class Model {
 
         public Field getField() {
             return fieldView;
+        }
+
+        public void markThatPlayerWin() {
+            playerWin = true;
         }
     }
 
