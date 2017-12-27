@@ -23,11 +23,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".InitActivity"> </activity>
+        <activity
+            android:name=".InitActivity">
+        </activity>
 
         <activity
-            android:name="EditorActivity"
-            android:screenOrientation="portrait"> </activity>
+            android:name=".EditorActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".EndGameActivity">
+        </activity>
     </application>
 
 </manifest>

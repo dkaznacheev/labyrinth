@@ -26,6 +26,10 @@ public class FieldView extends View {
     protected int offsetX;
     protected int offsetY;
     private Paint paint;
+    Bitmap minotaurBmp;
+    Bitmap hospitalBmp;
+    private int treasureX;
+    private int treasureY;
 
     public float scrolledY = 0;
 
@@ -37,6 +41,16 @@ public class FieldView extends View {
 
     private void init() {
         paint = new Paint();
+        minotaurBmp = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(getResources(), R.drawable.bull),
+                CELL_SIZE,
+                CELL_SIZE,
+                true);
+        hospitalBmp = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(getResources(), R.drawable.hospital),
+                CELL_SIZE,
+                CELL_SIZE,
+                true);
     }
 
     public FieldView(Context context) {
@@ -89,10 +103,11 @@ public class FieldView extends View {
                         break;
                     }
                     case MINOTAUR: {
-                        Bitmap bitmapSource = BitmapFactory.decodeResource(getResources(), R.drawable.bull);
-                        Bitmap.createScaledBitmap(bitmapSource, CELL_SIZE, CELL_SIZE, true);
-                        canvas.drawBitmap(Bitmap.createScaledBitmap(bitmapSource, CELL_SIZE, CELL_SIZE, true),
-                                CELL_SIZE * cellX, CELL_SIZE * cellY, paint);
+                        canvas.drawBitmap(minotaurBmp, CELL_SIZE * cellX, CELL_SIZE * cellY, paint);
+                        break;
+                    }
+                    case HOSPITAL: {
+                        canvas.drawBitmap(hospitalBmp, CELL_SIZE * cellX, CELL_SIZE * cellY, paint);
                         break;
                     }
                 }
@@ -161,6 +176,29 @@ public class FieldView extends View {
         paint.setColor(Color.RED);
     }
 
+    private void drawTreasure(Canvas canvas) {
+        if (treasureX == -1)
+            return;
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(6);
+        paint.setColor(Color.BLACK);
+
+        float tx = treasureX + offsetX;
+        float ty = treasureY + offsetY;
+        canvas.drawLine(
+                (tx + (float)0.75) * CELL_SIZE,
+                (ty + (float)0.1) * CELL_SIZE,
+                (tx + (float)0.95) * CELL_SIZE,
+                (ty + (float)0.1) * CELL_SIZE,
+                paint);
+        canvas.drawLine(
+                (tx + (float)0.85) * CELL_SIZE,
+                (ty + (float)0.1) * CELL_SIZE,
+                (tx + (float)0.85) * CELL_SIZE,
+                (ty + (float)0.3) * CELL_SIZE,
+                paint);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -168,6 +206,11 @@ public class FieldView extends View {
         drawCells(canvas);
         drawGrid(canvas);
         drawWalls(canvas);
+        drawTreasure(canvas);
     }
 
+    protected void updateTreasure(int tx, int ty) {
+        treasureX = tx;
+        treasureY = ty;
+    }
 }

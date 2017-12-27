@@ -68,6 +68,7 @@ public class InitActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (playerNum < MAX_PLAYERS) {
                     playerEdits[playerNum].setVisibility(View.VISIBLE);
+                    playerEdits[playerNum].setText("Player " + Integer.toString(playerNum + 1));
                     playerNum++;
                     deleteButton.setVisibility(View.VISIBLE);
                 }

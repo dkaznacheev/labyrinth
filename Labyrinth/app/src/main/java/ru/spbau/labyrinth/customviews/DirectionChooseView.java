@@ -18,7 +18,11 @@ import ru.spbau.labyrinth.model.Model.*;
 public class DirectionChooseView extends View {
     private Map<Direction, Integer> positionX;
     private Map<Direction, Integer> positionY;
-
+    private final static int playerColors[] = new int[]{Color.RED,
+            Color.BLUE,
+            Color.GREEN,
+            Color.YELLOW};
+    private int playerNum = 0;
     private Direction chosen;
     private Paint paint;
 
@@ -68,7 +72,7 @@ public class DirectionChooseView extends View {
 
         for (Direction dir : Direction.values()) {
             if (dir == chosen) {
-                paint.setColor(Color.RED);
+                paint.setColor(playerColors[playerNum]);
             } else {
                 paint.setColor(Color.GRAY);
             }
@@ -103,5 +107,9 @@ public class DirectionChooseView extends View {
         }
         invalidate();
         return super.onTouchEvent(event);
+    }
+
+    public void setPlayerNum(int currentPlayerNum) {
+        playerNum = currentPlayerNum;
     }
 }

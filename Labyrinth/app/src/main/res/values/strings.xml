@@ -13,4 +13,5 @@
     <string name="load">Load</string>
     <string name="save">Save</string>
     <string name="field_editor">Field Editor</string>
+    <string name="menu">Menu</string>
 </resources>

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.spbau.labyrinth.customviews.DirectionChooseView;
@@ -23,6 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private int currentPlayerNum;
     private int currentDrawnPlayerNum;
     private Model model;
+    private final int[] backgrounds = {
+            R.drawable.labyrinth_red,
+            R.drawable.labyrinth_blue,
+            R.drawable.labyrinth_green,
+            R.drawable.labyrinth_yellow};
 
     private void setPlayerView(boolean scroll) {
 
@@ -36,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         cartridgesTextView.setText(Integer.toString(players[currentDrawnPlayerNum].getCartridgesCnt()));
         currentPlayerNameTextView.setText(names[currentDrawnPlayerNum]);
+
         if (currentDrawnPlayerNum == currentPlayerNum) {
             cartridgesTextView.setTypeface(null, Typeface.BOLD);
             currentPlayerNameTextView.setTypeface(null, Typeface.BOLD);
@@ -73,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
         Button nextTurnButton = (Button) findViewById(R.id.nextTurnButton);
 
+        final ImageView backgroundImageView = (ImageView) findViewById(R.id.imageView);
+
         playerNum = data.getIntExtra("playerNum", 0);
 
         String name = data.getStringExtra("player"+Integer.toString(0));
@@ -82,13 +91,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         model = new Model();
-        players = model.init(names, 5);
+        players = model.init(names, 3);
 
         turns = new Model.Turn[playerNum];
 
         currentPlayerNum = 0;
         currentDrawnPlayerNum = 0;
-
+        backgroundImageView.setImageResource(backgrounds[currentPlayerNum]);
         setPlayerView(true);
 
         moveDirectionChooseView.setOnClickListener(new View.OnClickListener() {
@@ -99,12 +108,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-       shootDirectionChooseView.setOnClickListener(new View.OnClickListener() {
+        shootDirectionChooseView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setPlayerView(false);
             }
-       });
+        });
 
         nextTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,11 +128,19 @@ public class MainActivity extends AppCompatActivity {
 
                 currentPlayerNum++;
                 if (currentPlayerNum == playerNum) {
-                    players = model.processTurnMuliplayer(turns);
+                    players = model.processTurnMultiplayer(turns);
+                    if (model.getWinner() != -1) {
+                        finishGame(model.getWinner());
+                    }
                     turns = new Model.Turn[playerNum];
                     currentPlayerNum = 0;
+
                 }
 
+                printTreasureOwner();
+                backgroundImageView.setImageResource(backgrounds[currentPlayerNum]);
+                moveDirectionChooseView.setPlayerNum(currentPlayerNum);
+                shootDirectionChooseView.setPlayerNum(currentPlayerNum);
                 currentDrawnPlayerNum = currentPlayerNum;
                 setPlayerView(true);
             }
@@ -155,12 +172,12 @@ public class MainActivity extends AppCompatActivity {
         nextPlayerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                currentDrawnPlayerNum++;
-                if (currentDrawnPlayerNum >= playerNum) {
-                    currentDrawnPlayerNum = 0;
-                }
+            currentDrawnPlayerNum++;
+            if (currentDrawnPlayerNum >= playerNum) {
+                currentDrawnPlayerNum = 0;
+            }
 
-                setPlayerView(true);
+            setPlayerView(true);
             }
         });
 
@@ -174,6 +191,24 @@ public class MainActivity extends AppCompatActivity {
                 horizontalScrollView.scrollTo(650, 0);
             }
         });
+    }
+
+    private void finishGame(int winner) {
+        Intent intent = new Intent(this, EndGameActivity.class);
+        intent.putExtra("winnerName", names[winner]);
+        intent.putExtra("winnerId", winner);
+        finish();
+        startActivity(intent);
+    }
+
+    private void printTreasureOwner() {
+        final TextView treasureTextView = (TextView) findViewById(R.id.treasureTextView);
+        int treasureOwner = model.getTreasureOwner();
+        String owner = "Nobody";
+        if (treasureOwner != -1) {
+            owner = names[treasureOwner];
+        }
+        treasureTextView.setText(owner + " has the treasure");
     }
 
     @Override
