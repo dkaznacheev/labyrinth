@@ -67,6 +67,9 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 Cursor c = db.query("mytable", null, null, null, null, null, null);
 
                 if (c.moveToFirst()) {
+                    while (!c.isLast()) {
+                        c.moveToNext();
+                    }
                     int ind = c.getColumnIndex("id");
                     int str = c.getColumnIndex("object");
                     String json = c.getString(str);

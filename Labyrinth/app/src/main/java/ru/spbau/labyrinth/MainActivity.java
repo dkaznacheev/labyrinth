@@ -13,6 +13,7 @@ import android.widget.TextView;
 import ru.spbau.labyrinth.customviews.DirectionChooseView;
 import ru.spbau.labyrinth.customviews.OuterScrollView;
 import ru.spbau.labyrinth.customviews.PlayerFieldView;
+import ru.spbau.labyrinth.model.Log;
 import ru.spbau.labyrinth.model.Model;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.labyrinth_blue,
             R.drawable.labyrinth_green,
             R.drawable.labyrinth_yellow};
+    private Log log;
 
     private void setPlayerView(boolean scroll) {
 
@@ -95,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
         turns = new Model.Turn[playerNum];
 
+        log = new Log(playerNum);
+
         currentPlayerNum = 0;
         currentDrawnPlayerNum = 0;
         backgroundImageView.setImageResource(backgrounds[currentPlayerNum]);
@@ -128,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
                 currentPlayerNum++;
                 if (currentPlayerNum == playerNum) {
+                    log.addRound(turns);
                     players = model.processTurnMultiplayer(turns);
                     if (model.getWinner() != -1) {
                         finishGame(model.getWinner());
@@ -151,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LogActivity.class);
+                intent.putExtra("log", Log.serialize(log));
                 startActivity(intent);
             }
         });
