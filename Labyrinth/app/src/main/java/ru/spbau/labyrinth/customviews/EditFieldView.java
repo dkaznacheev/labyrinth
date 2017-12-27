@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.ImageButton;
 
 
+import com.google.gson.Gson;
+
 import ru.spbau.labyrinth.R;
 import ru.spbau.labyrinth.model.field.Field;
 import ru.spbau.labyrinth.model.field.Field.State;
@@ -144,5 +146,18 @@ public class EditFieldView extends FieldView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+    }
+
+    public static String serialize(EditFieldView editFieldView) {
+        return Field.serialize(editFieldView.getField());
+    }
+
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
+        invalidate();
     }
 }
