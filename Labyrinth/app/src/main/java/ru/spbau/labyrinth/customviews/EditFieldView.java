@@ -149,14 +149,15 @@ public class EditFieldView extends FieldView {
     }
 
     public static String serialize(EditFieldView editFieldView) {
-        Gson gson = new Gson();
-        String json = gson.toJson(editFieldView);
-        return json;
+        return Field.serialize(editFieldView.getField());
     }
 
-    public static EditFieldView deserialize(String json) {
-        Gson gson = new Gson();
-        EditFieldView editFieldView = gson.fromJson(json, EditFieldView.class);
-        return editFieldView;
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
+        invalidate();
     }
 }

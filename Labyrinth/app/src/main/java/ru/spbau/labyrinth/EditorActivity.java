@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import ru.spbau.labyrinth.customviews.EditFieldView;
 import ru.spbau.labyrinth.customviews.OuterScrollView;
+import ru.spbau.labyrinth.model.field.Field;
 
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,9 +60,8 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
         switch (view.getId()) {
             case R.id.saveButton:
-                String gson = EditFieldView.serialize(editFieldView);
-                //cv.put("object", EditFieldView.serialize(editFieldView));
-                //long rowID = db.insert("mytable", null, cv);
+                cv.put("object", Field.serialize(editFieldView.getField()));
+                long rowID = db.insert("mytable", null, cv);
                 break;
             case R.id.loadButton:
                 Cursor c = db.query("mytable", null, null, null, null, null, null);
@@ -70,8 +70,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                     int ind = c.getColumnIndex("id");
                     int str = c.getColumnIndex("object");
                     String json = c.getString(str);
-                    Toast toast = Toast.makeText(this, json, Toast.LENGTH_LONG);
-                    toast.show();
+                    editFieldView.setField(Field.deserialize(json));
                 } else {
                     Toast toast = Toast.makeText(this, "No one level is saved.", Toast.LENGTH_LONG);
                     toast.show();
