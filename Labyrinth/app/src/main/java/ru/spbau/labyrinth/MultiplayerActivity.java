@@ -15,13 +15,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.TurnBasedMultiplayerClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 public class MultiplayerActivity extends AppCompatActivity implements
         View.OnClickListener {
-
     private static final int RC_SIGN_IN = 9001;
+    private static final int RC_SELECT_PLAYERS = 9010;
+    private TurnBasedMultiplayerClient turnBasedMultiplayerClient;
 
     private void startSignInIntent() {
         GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
@@ -30,15 +34,27 @@ public class MultiplayerActivity extends AppCompatActivity implements
         startActivityForResult(intent, RC_SIGN_IN);
     }
 
+    private void onConnected(GoogleSignInAccount googleSignInAccount) {
+        turnBasedMultiplayerClient = Games.getTurnBasedMultiplayerClient(this, googleSignInAccount);
+        turnBasedMultiplayerClient.getSelectOpponentsIntent(1, 4, true)
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityForResult(intent, RC_SELECT_PLAYERS);
+                    }
+                });
+        //Toast toast = Toast.makeText(getApplicationContext(), "OK!", Toast.LENGTH_LONG);
+        //toast.show();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                GoogleSignInAccount signedInAccount = result.getSignInAccount();
-                Toast toast = Toast.makeText(getApplicationContext(), "OK!", Toast.LENGTH_LONG);
-                toast.show();
+                onConnected(result.getSignInAccount());
+                findViewById(R.id.signOutButton).setVisibility(View.VISIBLE);
             } else {
                 String message = result.getStatus().getStatusMessage();
                 if (message == null || message.isEmpty()) {
