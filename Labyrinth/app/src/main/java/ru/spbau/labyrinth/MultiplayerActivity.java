@@ -15,11 +15,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.TurnBasedMultiplayerClient;
+import com.google.android.gms.games.multiplayer.Multiplayer;
+import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
+import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatchConfig;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
 
 public class MultiplayerActivity extends AppCompatActivity implements
         View.OnClickListener {
@@ -36,15 +44,13 @@ public class MultiplayerActivity extends AppCompatActivity implements
 
     private void onConnected(GoogleSignInAccount googleSignInAccount) {
         turnBasedMultiplayerClient = Games.getTurnBasedMultiplayerClient(this, googleSignInAccount);
-        turnBasedMultiplayerClient.getSelectOpponentsIntent(1, 4, true)
+        turnBasedMultiplayerClient.getSelectOpponentsIntent(1, 3, true)
                 .addOnSuccessListener(new OnSuccessListener<Intent>() {
                     @Override
                     public void onSuccess(Intent intent) {
                         startActivityForResult(intent, RC_SELECT_PLAYERS);
                     }
                 });
-        //Toast toast = Toast.makeText(getApplicationContext(), "OK!", Toast.LENGTH_LONG);
-        //toast.show();
     }
 
     @Override
@@ -64,10 +70,38 @@ public class MultiplayerActivity extends AppCompatActivity implements
                         .setNeutralButton(android.R.string.ok, null).show();
             }
         } else if (requestCode == RC_SELECT_PLAYERS) {
-            if (requestCode != Activity.RESULT_OK) {
+            if (resultCode != Activity.RESULT_OK) {
                 return;
             }
+
+            int minAutoPlayers = data.getIntExtra(Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
+            int maxAutoPlayers = data.getIntExtra(Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
+            TurnBasedMatchConfig.Builder builder = TurnBasedMatchConfig.builder().addInvitedPlayers(data.getStringArrayListExtra(Games.EXTRA_PLAYER_IDS));
+
+            Bundle autoMatchCriteria = null;
+            if (minAutoPlayers > 0) {
+                autoMatchCriteria = RoomConfig.createAutoMatchCriteria(minAutoPlayers, maxAutoPlayers, 0);
+            }
+            builder.setAutoMatchCriteria(autoMatchCriteria);
+
+            /*
+            turnBasedMultiplayerClient.createMatch(builder.build()).addOnSuccessListener(new OnSuccessListener<TurnBasedMatch>() {
+                        @Override
+                        public void onSuccess(TurnBasedMatch turnBasedMatch) {
+                            onInitiateMatch(turnBasedMatch);
+                        }
+                    })
+                    .addOnFailureListener(createFailureListener("There was a problem creating a match!"));*/
+
         }
+    }
+
+    private void onInitiateMatch(TurnBasedMatch match) {
+        /*if (match.getData() != null) {
+            updateMatch(match);
+            return;
+        }
+        startMatch(match);*/
     }
 
     @Override
