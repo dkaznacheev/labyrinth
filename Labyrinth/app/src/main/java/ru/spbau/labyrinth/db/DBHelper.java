@@ -1,53 +1,82 @@
 package ru.spbau.labyrinth.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ru.spbau.labyrinth.model.field.Field;
 
-
-public class LevelsDataBaseHelper extends SQLiteOpenHelper {
-    private final static String SQL_CREATE_ENTRIES =
-            "CREATE TABLE levels (\n" +
-            "name text PRIMARY_KEY,\n" +
-            "data text NOT NULL";
-    private final static String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS levels";
-
-    public LevelsDataBaseHelper(Context context) {
-        super(context, "levels.db", null, 1);
+public class DBHelper extends SQLiteOpenHelper {
+    public DBHelper(Context context) {
+        super(context, "Mazes DB", null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES);
+        sqLiteDatabase.execSQL("create table mytable (id integer primary key autoincrement," +
+                "object text);");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES);
-        onCreate(sqLiteDatabase);
+
     }
 
-    public Field loadLevel(String name) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("SELECT data FROM levels WHERE name=?", new String[] {name});
-            if (cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                String data = cursor.getString(cursor.getColumnIndex("data"));
-                return Field.deserialize(data);
+    public long saveField(Field field) {
+        ContentValues contentValues = new ContentValues();
+        SQLiteDatabase database = getWritableDatabase();
+
+        contentValues.put("object", Field.serialize(field));
+        long rowID = database.insert(
+                "mytable",
+                null,
+                contentValues);
+        return rowID;
+    }
+
+    public List<String> getAllSavedMazesNames() {
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<String> mazesNames = new ArrayList<>();
+
+        Cursor c = db.query("mytable", null, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            while (true) {
+                int ind = c.getInt(c.getColumnIndex("id"));
+                mazesNames.add(Integer.toString(ind));
+                if (!c.moveToNext()) {
+                    break;
+                }
             }
-        } finally {
-            cursor.close();
         }
-        return null;
+
+        close();
+        return mazesNames;
     }
 
-    public void saveLevel(String name, Field field) {
-        String data = Field.serialize(field);
+    public String findMazeById(int id) {
+        SQLiteDatabase db = getWritableDatabase();
 
+        String json = null;
+        Cursor c = db.query("mytable", null, null, null, null, null, null);
+        if (c.moveToFirst()) {
+            while (true) {
+                int ind = c.getInt(c.getColumnIndex("id"));
+                if (ind == id) {
+                    json = c.getString(c.getColumnIndex("object"));
+                }
+                if (!c.moveToNext()) {
+                    break;
+                }
+            }
+        }
+
+        close();
+        return json;
     }
 }

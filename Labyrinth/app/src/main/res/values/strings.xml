@@ -8,6 +8,7 @@
     <string name="prev_player"> &lt; </string>
     <string name="new_game"> New Game </string>
     <string name="add">Add</string>
+    <string name="menu">Menu</string>
     <string name="delete">Delete</string>
     <string name="ready">Ready!</string>
     <string name="load">Load</string>
@@ -21,4 +22,5 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
     <string name="signin_other_error">There was an issue with sign in.  Please try again later.</string>
+    <string name="load_game">Load Game</string>
 </resources>
