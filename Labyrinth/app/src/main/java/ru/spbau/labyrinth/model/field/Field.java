@@ -1,7 +1,6 @@
 package ru.spbau.labyrinth.model.field;
 
 import com.google.gson.Gson;
-
 import java.util.Arrays;
 
 /**

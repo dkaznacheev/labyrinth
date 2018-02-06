@@ -64,7 +64,8 @@ public class MultiplayerActivity extends AppCompatActivity implements
                         .setNeutralButton(android.R.string.ok, null).show();
             }
         } else if (requestCode == RC_SELECT_PLAYERS) {
-            if (requestCode != Activity.RESULT_OK) {
+            if (resultCode != Activity.RESULT_OK) {
+                //TODO (in the network branch)
                 return;
             }
         }

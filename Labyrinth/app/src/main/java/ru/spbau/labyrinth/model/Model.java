@@ -222,7 +222,7 @@ public class Model {
     }
 
     // TODO something less genius :)
-    public Field generateRandomField(Random random, int fieldSize) {
+    private Field generateRandomField(Random random, int fieldSize) {
         Field f = new Field(fieldSize);
 
         for (int i = 0; i < fieldSize; i++) {
@@ -292,10 +292,11 @@ public class Model {
         return new int[]{0, 0};
     }
 
+    //Inner but not nested because players is linked to model
     public class Player {
         private int x, y, hp, cartridgesCnt, id;
         private int initialX, initialY;
-        private String name;
+        private final String name;
         private Field fieldView;
         private boolean hasTreasure;
         private boolean playerWin;
@@ -405,17 +406,6 @@ public class Model {
         }
     }
 
-    public class Minotaur {
-        private int x, y;
-        private String name;
-
-        Minotaur(int posx, int posy, String name) {
-            x = posx;
-            y = posy;
-            this.name = name;
-        }
-    }
-
     /**
      * Turn class is intended for storing information about game turn of one player.
      */
@@ -451,14 +441,12 @@ public class Model {
 
         public static String serialize(Turn turn) {
             Gson gson = new Gson();
-            String json = gson.toJson(turn);
-            return json;
+            return gson.toJson(turn);
         }
 
         public static Turn deserialize(String json) {
             Gson gson = new Gson();
-            Turn turn = gson.fromJson(json, Turn.class);
-            return turn;
+            return gson.fromJson(json, Turn.class);
         }
     }
 }
