@@ -2,8 +2,8 @@ package ru.spbau.labyrinth;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -13,14 +13,18 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ru.spbau.labyrinth.customviews.EditFieldView;
+import ru.spbau.labyrinth.customviews.FieldView;
 import ru.spbau.labyrinth.customviews.OuterScrollView;
 import ru.spbau.labyrinth.model.field.Field;
 
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
 
-    DBHelper dbHelper;
-    EditFieldView editFieldView;
+    static DBHelper dbHelper;
+    static EditFieldView editFieldView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,23 +52,28 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         Button loadButton = (Button) findViewById(R.id.loadButton);
 
         saveButton.setOnClickListener(this);
-        loadButton.setOnClickListener(this);
+        loadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditorActivity.this, LevelSelectActivity.class);
+                startActivity(intent);
+            }
+        });
 
         dbHelper = new DBHelper(this);
     }
 
     @Override
     public void onClick(View view) {
-        ContentValues cv = new ContentValues();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         switch (view.getId()) {
             case R.id.saveButton:
-                cv.put("object", Field.serialize(editFieldView.getField()));
-                long rowID = db.insert("mytable", null, cv);
+                contentValues.put("object", Field.serialize(editFieldView.getField()));
+                long rowID = database.insert("mytable", null, contentValues);
                 break;
-            case R.id.loadButton:
-                Cursor c = db.query("mytable", null, null, null, null, null, null);
+                /*Cursor c = db.query("mytable", null, null, null, null, null, null);
 
                 if (c.moveToFirst()) {
                     while (!c.isLast()) {
@@ -77,7 +86,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     Toast toast = Toast.makeText(this, "No one level is saved.", Toast.LENGTH_LONG);
                     toast.show();
-                }
+                }*/
         }
 
         dbHelper.close();
@@ -98,5 +107,50 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
         }
+    }
+
+    public static List<String> getAllSavedMazesNames() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ArrayList<String> mazesNames = new ArrayList<>();
+
+        Cursor c = db.query("mytable", null, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            while (true) {
+                int ind = c.getInt(c.getColumnIndex("id"));
+                mazesNames.add(Integer.toString(ind));
+                if (!c.moveToNext()) {
+                    break;
+                }
+            }
+        }
+
+        dbHelper.close();
+        return mazesNames;
+    }
+
+    public static void setEditFieldView(String json) {
+        editFieldView.setField(Field.deserialize(json));
+    }
+
+    public static String findMazeById(int id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String json = null;
+        Cursor c = db.query("mytable", null, null, null, null, null, null);
+        if (c.moveToFirst()) {
+            while (true) {
+                int ind = c.getInt(c.getColumnIndex("id"));
+                if (ind == id) {
+                    json = c.getString(c.getColumnIndex("object"));
+                }
+                if (!c.moveToNext()) {
+                    break;
+                }
+            }
+        }
+
+        dbHelper.close();
+        return json;
     }
 }

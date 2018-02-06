@@ -11,8 +11,8 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".LogActivity"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".LogActivity" />
         <activity android:name=".StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,15 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InitActivity"></activity>
+        <activity android:name=".InitActivity" />
         <activity
             android:name=".EditorActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".MultiplayerActivity"></activity>
-        <meta-data android:name="com.google.android.gms.games.APP_ID"
-            android:value="@string/app_id" />
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:screenOrientation="portrait" />
+        <activity android:name=".LevelSelectActivity"></activity>
     </application>
 
 </manifest>
