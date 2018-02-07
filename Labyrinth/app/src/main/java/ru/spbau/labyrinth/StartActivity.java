@@ -11,10 +11,6 @@ public class StartActivity extends AppCompatActivity {
     private static final int PLAYERNAMES_REQUEST = 1;
     private final static String PREFS_NAME = "LocalSave";
 
-    private void killActivity() {
-        finish();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLAYERNAMES_REQUEST) {

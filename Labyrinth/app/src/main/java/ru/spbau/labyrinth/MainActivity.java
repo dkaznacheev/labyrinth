@@ -20,20 +20,15 @@ import ru.spbau.labyrinth.model.Model;
 
 public class MainActivity extends AppCompatActivity {
     private final static String PREFS_NAME = "LocalSave";
+    
+    private GameState state;
 
-    private int playerNum;
-    private Model.Player[] players;
-    private Model.Turn[] turns;
-    private String[] names;
-    private int currentPlayerNum;
     private int currentDrawnPlayerNum;
-    private Model model;
     private final int[] backgrounds = {
             R.drawable.labyrinth_red,
             R.drawable.labyrinth_blue,
             R.drawable.labyrinth_green,
             R.drawable.labyrinth_yellow};
-    private Log log;
 
     private void updatePlayerView(boolean scroll) {
 
@@ -45,20 +40,24 @@ public class MainActivity extends AppCompatActivity {
         final TextView cartridgesTextView = findViewById(R.id.cartridgesTextView);
         final TextView currentPlayerNameTextView = findViewById(R.id.currentPlayerName);
 
-        cartridgesTextView.setText(Integer.toString(players[currentDrawnPlayerNum].getCartridgesCnt()));
-        currentPlayerNameTextView.setText(names[currentDrawnPlayerNum]);
+        Model.Player player = state.getPlayers()[currentDrawnPlayerNum];
+        cartridgesTextView.setText(Integer.toString(player.getCartridgesCnt()));
+        currentPlayerNameTextView.setText(state.getNames()[currentDrawnPlayerNum]);
 
-        if (currentDrawnPlayerNum == currentPlayerNum) {
+        moveDirectionChooseView.setPlayerNum(state.getCurrentPlayerNum());
+        shootDirectionChooseView.setPlayerNum(state.getCurrentPlayerNum());
+        
+        if (currentDrawnPlayerNum == state.getCurrentPlayerNum()) {
             cartridgesTextView.setTypeface(null, Typeface.BOLD);
             currentPlayerNameTextView.setTypeface(null, Typeface.BOLD);
-            fieldView.updatePlayer(players[currentDrawnPlayerNum], moveDirectionChooseView.getDirection(), shootDirectionChooseView.getDirection());
+            fieldView.updatePlayer(player, moveDirectionChooseView.getDirection(), shootDirectionChooseView.getDirection());
         } else {
             cartridgesTextView.setTypeface(null, Typeface.NORMAL);
             currentPlayerNameTextView.setTypeface(null, Typeface.NORMAL);
-            fieldView.updatePlayer(players[currentDrawnPlayerNum], Model.Direction.NONE, Model.Direction.NONE);
+            fieldView.updatePlayer(player, Model.Direction.NONE, Model.Direction.NONE);
         }
-        int toScrollX = 3 + (players[currentDrawnPlayerNum].getX() - players[currentDrawnPlayerNum].getInitialX());
-        int toScrollY = 3 + (players[currentDrawnPlayerNum].getY() - players[currentDrawnPlayerNum].getInitialY());
+        int toScrollX = 3 + (player.getX() - player.getInitialX());
+        int toScrollY = 3 + (player.getY() - player.getInitialY());
         if (scroll) {
             outerScrollView.scrollTo(0, toScrollY * 200 + 50);
             horizontalScrollView.scrollTo(toScrollX * 200 + 50, 0);
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         clearSave();
 
         Intent intent = new Intent(this, EndGameActivity.class);
-        intent.putExtra("winnerName", names[winner]);
+        intent.putExtra("winnerName", state.getNames()[winner]);
         intent.putExtra("winnerId", winner);
         finish();
         startActivity(intent);
@@ -85,27 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void printTreasureOwner() {
         final TextView treasureTextView = findViewById(R.id.treasureTextView);
-        int treasureOwner = model.getTreasureOwner();
-        String owner = "Nobody";
-        if (treasureOwner != -1) {
-            owner = names[treasureOwner];
-        }
-        treasureTextView.setText(owner + " has the treasure");
-    }
-
-    private void updateTurn(Model.Turn turn) {
-        turns[currentPlayerNum] = turn;
-
-        currentPlayerNum++;
-        if (currentPlayerNum == playerNum) {
-            log.addRound(turns);
-            players = model.processTurnMultiplayer(turns);
-            if (model.getWinner() != -1) {
-                finishGame(model.getWinner());
-            }
-            turns = new Model.Turn[playerNum];
-            currentPlayerNum = 0;
-        }
+        treasureTextView.setText(state.getTreasureOwner() + " has the treasure");
     }
 
     @Override
@@ -116,31 +95,28 @@ public class MainActivity extends AppCompatActivity {
         final OuterScrollView outerScrollView = findViewById(R.id.outerScroll);
         final HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScroll);
         outerScrollView.horizontalScrollView = horizontalScrollView;
-
         final DirectionChooseView moveDirectionChooseView = findViewById(R.id.moveDirView);
         final DirectionChooseView shootDirectionChooseView = findViewById(R.id.shootDirView);
-
-        Button nextTurnButton = findViewById(R.id.nextTurnButton);
-
+        final Button nextTurnButton = findViewById(R.id.nextTurnButton);
         final ImageView backgroundImageView = findViewById(R.id.imageView);
 
         Intent intent = getIntent();
 
         if (intent.getBooleanExtra("isNewGame", true)) {
-            initializeGameState();
+            state = new GameState(intent);
         } else {
-            SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
-            String save = savedGame.getString("gameState", null);
-            GameState state = GameState.deserialize(save);
-            if (state == null) {
-                finish();
-                return;
-            }
-            loadGameFromState(state);
+            state = GameState.deserialize(
+                    getSharedPreferences(PREFS_NAME, 0)
+                    .getString("gameState", null));
         }
-        currentDrawnPlayerNum = currentPlayerNum;
+        if (state == null) {
+            finish();
+            return;
+        }
+        currentDrawnPlayerNum = state.getCurrentPlayerNum();
         
-        backgroundImageView.setImageResource(backgrounds[currentPlayerNum]);
+        backgroundImageView.setImageResource(
+                backgrounds[state.getCurrentPlayerNum()]);//-
         updatePlayerView(true);
 
         moveDirectionChooseView.setOnClickListener(new View.OnClickListener() {
@@ -161,18 +137,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Model.Turn turn = new Model.Turn(moveDirectionChooseView.getDirection(),
-                        shootDirectionChooseView.getDirection(), currentPlayerNum);
+                        shootDirectionChooseView.getDirection(), state.getCurrentPlayerNum());
 
                 moveDirectionChooseView.resetDirection();
                 shootDirectionChooseView.resetDirection();
 
-                updateTurn(turn);
+                int turnResult = state.updateTurn(turn);
+                if (turnResult != -1) {
+                    finishGame(turnResult);
+                }
 
                 printTreasureOwner();
-                backgroundImageView.setImageResource(backgrounds[currentPlayerNum]);
-                moveDirectionChooseView.setPlayerNum(currentPlayerNum);
-                shootDirectionChooseView.setPlayerNum(currentPlayerNum);
-                currentDrawnPlayerNum = currentPlayerNum;
+                backgroundImageView.setImageResource(backgrounds[state.getCurrentPlayerNum()]);
+                currentDrawnPlayerNum = state.getCurrentPlayerNum();
                 updatePlayerView(true);
             }
         });
@@ -182,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             Intent intent = new Intent(MainActivity.this, LogActivity.class);
-            intent.putExtra("log", Log.serialize(log));
+            intent.putExtra("log", Log.serialize(state.getLog()));
             startActivity(intent);
             }
         });
@@ -193,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 currentDrawnPlayerNum--;
                 if (currentDrawnPlayerNum < 0) {
-                    currentDrawnPlayerNum = playerNum - 1;
+                    currentDrawnPlayerNum = state.getPlayerNum() - 1;
                 }
 
                 updatePlayerView(true);
@@ -205,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentDrawnPlayerNum++;
-                if (currentDrawnPlayerNum >= playerNum) {
+                if (currentDrawnPlayerNum >= state.getPlayerNum()) {
                     currentDrawnPlayerNum = 0;
                 }
 
@@ -223,35 +200,6 @@ public class MainActivity extends AppCompatActivity {
                 horizontalScrollView.scrollTo(650, 0);
             }
         });
-
-    }
-
-    private void loadGameFromState(GameState state) {
-        model = state.getModel();
-        players = state.getPlayers();
-        playerNum = players.length;
-        names = state.getNames();
-        turns = state.getTurns();
-        log = state.getLog();
-        currentPlayerNum = state.getCurrentPlayerNum();
-    }
-
-    private void initializeGameState() {
-        loadPlayersFromIntent(getIntent());
-        model = new Model();
-        players = model.init(names, 3);
-        turns = new Model.Turn[playerNum];
-        log = new Log(playerNum);
-        currentPlayerNum = 0;
-    }
-
-    private void loadPlayersFromIntent(Intent data) {
-        playerNum = data.getIntExtra("playerNum", 0);
-
-        names = new String[playerNum];
-        for (int i = 0; i < playerNum; i++) {
-            names[i] = data.getStringExtra("player"+Integer.toString(i));
-        }
     }
 
     @Override
@@ -261,8 +209,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences.Editor editor = savedGame.edit();
 
-        GameState save = new GameState(model, players, names, turns, log, currentPlayerNum);
-        editor.putString("gameState", save.toString());
+        editor.putString("gameState", state.toString());
         editor.putBoolean("saved", true);
 
         editor.commit();
