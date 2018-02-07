@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences.Editor editor = savedGame.edit();
 
-        editor.putString("gameState", state.toString());
+        editor.putString("gameState", state.serialize());
         editor.putBoolean("saved", true);
 
         editor.commit();

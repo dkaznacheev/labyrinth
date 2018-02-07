@@ -73,8 +73,7 @@ public class GameState implements Cloneable{
         return model.getWinner();
     }
 
-    @Override
-    public String toString() {
+    public String serialize() {
         return new Gson().toJson(this);
     }
 
