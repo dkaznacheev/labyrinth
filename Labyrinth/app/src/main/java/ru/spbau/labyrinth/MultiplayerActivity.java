@@ -1,6 +1,7 @@
 package ru.spbau.labyrinth;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,8 +16,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.TurnBasedMultiplayerClient;
 import com.google.android.gms.games.multiplayer.Multiplayer;
@@ -24,16 +23,16 @@ import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatch;
 import com.google.android.gms.games.multiplayer.turnbased.TurnBasedMatchConfig;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-
-import java.util.ArrayList;
 
 public class MultiplayerActivity extends AppCompatActivity implements
         View.OnClickListener {
     private static final int RC_SIGN_IN = 9001;
     private static final int RC_SELECT_PLAYERS = 9010;
     private TurnBasedMultiplayerClient turnBasedMultiplayerClient;
+    private TurnBasedMatch turnBasedMatch;
 
     private void startSignInIntent() {
         GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
@@ -84,24 +83,72 @@ public class MultiplayerActivity extends AppCompatActivity implements
             }
             builder.setAutoMatchCriteria(autoMatchCriteria);
 
-            /*
+
             turnBasedMultiplayerClient.createMatch(builder.build()).addOnSuccessListener(new OnSuccessListener<TurnBasedMatch>() {
                         @Override
                         public void onSuccess(TurnBasedMatch turnBasedMatch) {
                             onInitiateMatch(turnBasedMatch);
                         }
                     })
-                    .addOnFailureListener(createFailureListener("There was a problem creating a match!"));*/
+                    .addOnFailureListener(createFailureListener("There was a problem creating a match!"));
 
         }
     }
 
     private void onInitiateMatch(TurnBasedMatch match) {
-        /*if (match.getData() != null) {
-            updateMatch(match);
+        if (match.getData() == null) {
+            //TODO:????
+            //initializeGameData(match);
             return;
+        } else {
+            updateMatch(match);
         }
-        startMatch(match);*/
+
+        startMatch(match);
+    }
+
+    private void startMatch(TurnBasedMatch match) {
+
+    }
+
+    private void updateMatch(TurnBasedMatch match) {
+        turnBasedMatch = match;
+
+        int matchStatus = match.getStatus();
+        int turnStatus = match.getTurnStatus();
+
+        switch (matchStatus) {
+            case TurnBasedMatch.MATCH_STATUS_CANCELED:
+                showWarning("Canceled.", "This match was canceled.");
+                return;
+            case TurnBasedMatch.MATCH_STATUS_EXPIRED:
+                showWarning("Expired.", "This match is expired.");
+                return;
+            case TurnBasedMatch.MATCH_STATUS_AUTO_MATCHING:
+                return;
+            case TurnBasedMatch.MATCH_STATUS_COMPLETE:
+                showWarning("Completed.", "This match is completed.");
+                return;
+        }
+
+        if (turnStatus == TurnBasedMatch.MATCH_TURN_STATUS_MY_TURN) {
+
+        }
+    }
+
+    private void showWarning(String title, String message) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(title).setMessage(message);
+        alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(MultiplayerActivity.this, StartActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        alertDialogBuilder.create().show();
     }
 
     @Override
@@ -136,5 +183,21 @@ public class MultiplayerActivity extends AppCompatActivity implements
 
                     }
                 });
+    }
+
+    private OnFailureListener createFailureListener(final String string) {
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                handleException(e, string);
+            }
+        };
+    }
+
+    private void handleException(Exception exception, String details) {
+        new android.app.AlertDialog.Builder(this)
+                .setMessage(exception.getMessage() + "\n" + details)
+                .setNeutralButton(android.R.string.ok, null)
+                .show();
     }
 }
