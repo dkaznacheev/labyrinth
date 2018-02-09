@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import ru.spbau.labyrinth.networkMultiplayer.MultiplayerActivity;
+
 public class StartActivity extends AppCompatActivity {
 
     @Override
