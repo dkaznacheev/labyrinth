@@ -17,7 +17,7 @@ public class StartActivity extends AppCompatActivity {
             if (data == null || resultCode != RESULT_OK) {
                 return;
             }
-            Intent intent = new Intent(StartActivity.this, MainActivity.class);
+            Intent intent = new Intent(StartActivity.this, LocalGameActivity.class);
             intent.putExtras(data);
             intent.putExtra("isNewGame", true);
             startActivity(intent);
@@ -43,7 +43,7 @@ public class StartActivity extends AppCompatActivity {
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                Intent intent = new Intent(StartActivity.this, LocalGameActivity.class);
                 intent.putExtra("isNewGame", false);
                 startActivity(intent);
             }

@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/layout"
-    tools:context="ru.spbau.labyrinth.MainActivity">
+    tools:context="ru.spbau.labyrinth.LocalGameActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/background"
         android:layout_width="900dp"
         android:layout_height="900dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -6,21 +6,13 @@ import com.google.gson.Gson;
 
 import ru.spbau.labyrinth.model.Model.*;
 
-public class GameState implements Cloneable{
+public class GameState {
     public Model getModel() {
         return model;
     }
 
     public Player[] getPlayers() {
         return players;
-    }
-
-    public String[] getNames() {
-        return names;
-    }
-
-    public Turn[] getTurns() {
-        return turns;
     }
 
     public Log getLog() {
@@ -37,7 +29,6 @@ public class GameState implements Cloneable{
 
     private Model model;
     private Player[] players;
-    private String[] names;
     private Turn[] turns;
     private Log log;
     private int currentPlayerNum;
@@ -45,7 +36,7 @@ public class GameState implements Cloneable{
 
     public GameState(Intent data) {
         playerNum = data.getIntExtra("playerNum", 0);
-        names = new String[playerNum];
+        String[] names = new String[playerNum];
         for (int i = 0; i < playerNum; i++) {
             names[i] = data.getStringExtra("player" + Integer.toString(i));
         }
@@ -61,7 +52,7 @@ public class GameState implements Cloneable{
         return new Gson().fromJson(save, GameState.class);
     }
 
-    public int updateTurn(Model.Turn turn) {
+    public int updateTurn(Turn turn) {
         turns[currentPlayerNum] = turn;
         currentPlayerNum++;
         if (currentPlayerNum == playerNum) {
@@ -81,7 +72,7 @@ public class GameState implements Cloneable{
         int treasureOwner = model.getTreasureOwner();
         String owner = "Nobody";
         if (treasureOwner != -1) {
-            owner = names[treasureOwner];
+            owner = players[treasureOwner].getName();
         }
         return owner;
     }

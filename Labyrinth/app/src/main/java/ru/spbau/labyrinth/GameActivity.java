@@ -1,14 +1,12 @@
 package ru.spbau.labyrinth;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.spbau.labyrinth.customviews.DirectionChooseView;
@@ -18,20 +16,18 @@ import ru.spbau.labyrinth.model.GameState;
 import ru.spbau.labyrinth.model.Log;
 import ru.spbau.labyrinth.model.Model;
 
-public class MainActivity extends AppCompatActivity {
-    private final static String PREFS_NAME = "LocalSave";
-    
-    private GameState state;
+public abstract class GameActivity extends AppCompatActivity {
+    protected GameState state;
 
-    private int currentDrawnPlayerNum;
-    private final int[] backgrounds = {
+    protected int currentDrawnPlayerNum;
+    protected final static int[] backgrounds = {
             R.drawable.labyrinth_red,
             R.drawable.labyrinth_blue,
             R.drawable.labyrinth_green,
             R.drawable.labyrinth_yellow};
 
     private void updatePlayerView(boolean scroll) {
-
+        printTreasureOwner();
         final OuterScrollView outerScrollView = findViewById(R.id.outerScroll);
         final HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScroll);
         final DirectionChooseView moveDirectionChooseView = findViewById(R.id.moveDirView);
@@ -42,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         Model.Player player = state.getPlayers()[currentDrawnPlayerNum];
         cartridgesTextView.setText(Integer.toString(player.getCartridgesCnt()));
-        currentPlayerNameTextView.setText(state.getNames()[currentDrawnPlayerNum]);
+        currentPlayerNameTextView.setText(player.getName());
 
         moveDirectionChooseView.setPlayerNum(state.getCurrentPlayerNum());
         shootDirectionChooseView.setPlayerNum(state.getCurrentPlayerNum());
@@ -64,22 +60,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void finishGame(int winner) {
-        clearSave();
-
+    protected void finishGame(int winner) {
         Intent intent = new Intent(this, EndGameActivity.class);
-        intent.putExtra("winnerName", state.getNames()[winner]);
+        intent.putExtra("winnerName", state.getPlayers()[winner].getName());
         intent.putExtra("winnerId", winner);
         finish();
         startActivity(intent);
-    }
-
-    private void clearSave() {
-        SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = savedGame.edit();
-        editor.clear();
-        editor.putBoolean("saved", false);
-        editor.commit();
     }
 
     private void printTreasureOwner() {
@@ -90,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_game);
 
         final OuterScrollView outerScrollView = findViewById(R.id.outerScroll);
         final HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScroll);
@@ -98,25 +84,9 @@ public class MainActivity extends AppCompatActivity {
         final DirectionChooseView moveDirectionChooseView = findViewById(R.id.moveDirView);
         final DirectionChooseView shootDirectionChooseView = findViewById(R.id.shootDirView);
         final Button nextTurnButton = findViewById(R.id.nextTurnButton);
-        final ImageView backgroundImageView = findViewById(R.id.imageView);
 
-        Intent intent = getIntent();
+        initializeGameState();
 
-        if (intent.getBooleanExtra("isNewGame", true)) {
-            state = new GameState(intent);
-        } else {
-            state = GameState.deserialize(
-                    getSharedPreferences(PREFS_NAME, 0)
-                    .getString("gameState", null));
-        }
-        if (state == null) {
-            finish();
-            return;
-        }
-        currentDrawnPlayerNum = state.getCurrentPlayerNum();
-        
-        backgroundImageView.setImageResource(
-                backgrounds[state.getCurrentPlayerNum()]);//-
         updatePlayerView(true);
 
         moveDirectionChooseView.setOnClickListener(new View.OnClickListener() {
@@ -139,17 +109,8 @@ public class MainActivity extends AppCompatActivity {
                 Model.Turn turn = new Model.Turn(moveDirectionChooseView.getDirection(),
                         shootDirectionChooseView.getDirection(), state.getCurrentPlayerNum());
 
-                moveDirectionChooseView.resetDirection();
-                shootDirectionChooseView.resetDirection();
+                processNextTurn(turn);
 
-                int turnResult = state.updateTurn(turn);
-                if (turnResult != -1) {
-                    finishGame(turnResult);
-                }
-
-                printTreasureOwner();
-                backgroundImageView.setImageResource(backgrounds[state.getCurrentPlayerNum()]);
-                currentDrawnPlayerNum = state.getCurrentPlayerNum();
                 updatePlayerView(true);
             }
         });
@@ -158,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         logButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            Intent intent = new Intent(MainActivity.this, LogActivity.class);
+            Intent intent = new Intent(GameActivity.this, LogActivity.class);
             intent.putExtra("log", Log.serialize(state.getLog()));
             startActivity(intent);
             }
@@ -202,16 +163,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onPause(){
-        super.onPause();
-
-        SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = savedGame.edit();
-
-        editor.putString("gameState", state.serialize());
-        editor.putBoolean("saved", true);
-
-        editor.commit();
-    }
+    protected abstract void initializeGameState();
+    protected abstract void processNextTurn(Model.Turn turn);
 }

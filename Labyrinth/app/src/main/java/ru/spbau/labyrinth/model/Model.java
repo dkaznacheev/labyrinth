@@ -404,6 +404,10 @@ public class Model {
         public void setTreasurePos(int x, int y) {
             fieldView.setTreasurePos(x, y);
         }
+
+        public String getName() {
+            return name;
+        }
     }
 
     /**
