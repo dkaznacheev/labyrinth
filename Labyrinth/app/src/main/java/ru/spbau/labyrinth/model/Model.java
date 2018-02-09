@@ -160,7 +160,9 @@ public class Model {
 
             if (field.getState(curPosX, curPosY) == Field.State.MINOTAUR) {
                 field.setState(curPosX, curPosY, Field.State.NOTHING);
-                players[turn.getId()].setFieldState(curPosX, curPosY, Field.State.NOTHING);
+                for (Player player: players) {
+                    player.setFieldState(curPosX, curPosY, Field.State.NOTHING);
+                }
                 someoneKilled = true;
             }
 
