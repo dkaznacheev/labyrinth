@@ -74,10 +74,10 @@ public class EditFieldView extends FieldView {
         View dialogView = inflater.inflate(R.layout.dialog_choosecell, null);
         dialogBuilder.setView(dialogView);
 
-        ImageButton bullButton = (ImageButton)dialogView.findViewById(R.id.bullButton);
-        ImageButton nothingButton = (ImageButton)dialogView.findViewById(R.id.nothingButton);
-        ImageButton hospitalButton = (ImageButton)dialogView.findViewById(R.id.hospitalButton);
-        ImageButton treasureButton = (ImageButton)dialogView.findViewById(R.id.treasureButton);
+        ImageButton bullButton = dialogView.findViewById(R.id.bullButton);
+        ImageButton nothingButton = dialogView.findViewById(R.id.nothingButton);
+        ImageButton hospitalButton = dialogView.findViewById(R.id.hospitalButton);
+        ImageButton treasureButton = dialogView.findViewById(R.id.treasureButton);
 
         final AlertDialog alertDialog = dialogBuilder.create();
 

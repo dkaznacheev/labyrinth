@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("create table mytable (id integer primary key autoincrement," +
-                "object text);");
+                "object text, name text);");
     }
 
     @Override
@@ -27,11 +27,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-    public long saveField(Field field) {
+    public long saveField(Field field, String name) {
         ContentValues contentValues = new ContentValues();
         SQLiteDatabase database = getWritableDatabase();
 
         contentValues.put("object", Field.serialize(field));
+        contentValues.put("name", name);
         long rowID = database.insert(
                 "mytable",
                 null,
@@ -47,8 +48,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if (c.moveToFirst()) {
             while (true) {
-                int ind = c.getInt(c.getColumnIndex("id"));
-                mazesNames.add(Integer.toString(ind));
+                String name = c.getString(c.getColumnIndex("name"));
+                mazesNames.add(name);
                 if (!c.moveToNext()) {
                     break;
                 }
@@ -58,6 +59,33 @@ public class DBHelper extends SQLiteOpenHelper {
         close();
         return mazesNames;
     }
+
+    public ArrayList<Integer> getAllSavedMazesIds() {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ArrayList<Integer> ids = new ArrayList<>();
+
+        Cursor c = db.query("mytable", null, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            while (true) {
+                int id = c.getInt(c.getColumnIndex("id"));
+                ids.add(id);
+                if (!c.moveToNext()) {
+                    break;
+                }
+            }
+        }
+
+        close();
+        return ids;
+    }
+
+    public void deleteMazeById(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("mytable", "id="+Integer.toString(id), null);
+    }
+
 
     public String findMazeById(int id) {
         SQLiteDatabase db = getWritableDatabase();

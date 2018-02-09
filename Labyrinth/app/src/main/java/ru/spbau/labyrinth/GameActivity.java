@@ -80,7 +80,7 @@ public abstract class GameActivity extends AppCompatActivity {
 
         final OuterScrollView outerScrollView = findViewById(R.id.outerScroll);
         final HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScroll);
-        outerScrollView.horizontalScrollView = horizontalScrollView;
+        //outerScrollView.horizontalScrollView = horizontalScrollView;
         final DirectionChooseView moveDirectionChooseView = findViewById(R.id.moveDirView);
         final DirectionChooseView shootDirectionChooseView = findViewById(R.id.shootDirView);
         final Button nextTurnButton = findViewById(R.id.nextTurnButton);

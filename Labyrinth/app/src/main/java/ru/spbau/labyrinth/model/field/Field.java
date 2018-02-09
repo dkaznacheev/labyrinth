@@ -25,13 +25,13 @@ public class Field {
     /**
      * Field constructor, creates new empty field.
      *
-     * @param fieledSize is size of field.
+     * @param fieldSize is size of field.
      */
-    public Field(int fieledSize) {
-        size = fieledSize;
-        field = new State[size][fieledSize];
-        borderX = new boolean[fieledSize + 1][fieledSize];
-        borderY = new boolean[fieledSize][fieledSize + 1];
+    public Field(int fieldSize) {
+        size = fieldSize;
+        field = new State[size][fieldSize];
+        borderX = new boolean[fieldSize + 1][fieldSize];
+        borderY = new boolean[fieldSize][fieldSize + 1];
 
         for (int i = 0; i < size; i++) {
             Arrays.fill(field[i], State.NOTHING);

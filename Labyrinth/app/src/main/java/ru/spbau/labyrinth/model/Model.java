@@ -233,7 +233,7 @@ public class Model {
         }
 
         int side = random.nextInt() % 4;
-        int pos = random.nextInt() % fieldSize;
+        int pos = random.nextInt() % (fieldSize - 1);
         if (side == 0) {
             f.setBorderPos(0, 0, pos);
         } else if (side == 2) {

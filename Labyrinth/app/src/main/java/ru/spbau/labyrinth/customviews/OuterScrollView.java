@@ -12,22 +12,34 @@ import ru.spbau.labyrinth.customviews.FieldView;
 public class OuterScrollView extends ScrollView {
     public HorizontalScrollView horizontalScrollView;
 
+    public void init() {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                horizontalScrollView = (HorizontalScrollView) getChildAt(0);
+            }
+        });
+    }
+
     public OuterScrollView(Context context) {
         super(context);
+        init();
     }
 
     public OuterScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public OuterScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         super.onInterceptTouchEvent(ev);
-        FieldView fieldView = (FieldView) findViewById(R.id.fieldView);
+        FieldView fieldView = findViewById(R.id.fieldView);
         fieldView.scrollY(this.getScrollY());
         horizontalScrollView.onInterceptTouchEvent(ev);
         return true;
