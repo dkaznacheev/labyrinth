@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import ru.spbau.labyrinth.networkMultiplayer.MultiplayerActivity;
+
 public class StartActivity extends AppCompatActivity {
     private static final int PLAYERNAMES_REQUEST = 1;
     private final static String PREFS_NAME = "LocalSave";
