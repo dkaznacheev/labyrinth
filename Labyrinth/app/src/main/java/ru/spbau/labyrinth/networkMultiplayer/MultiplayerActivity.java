@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -33,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
+import ru.spbau.labyrinth.OnlineGameActivity;
 import ru.spbau.labyrinth.R;
 import ru.spbau.labyrinth.StartActivity;
 
@@ -45,12 +45,12 @@ public class MultiplayerActivity extends AppCompatActivity implements View.OnCli
     private TurnBasedMatch turnBasedMatch;
     private InvitationsClient invitationsClient;
 
-    private MultiplayerMatch multiplayerMatch = new MultiplayerMatch();
+    private MultiplayerMatch multiplayerMatch = MultiplayerMatch.getInstance();
 
     private void startGame (int playersCount) {
-        //Intent intent = new Intent(MultiplayerActivity.this, OnlineGameActivity.class);
-        //intent.putExtra("playersCount", playersCount);
-        //startActivity(intent);
+        multiplayerMatch.playersCount = playersCount;
+        Intent intent = new Intent(MultiplayerActivity.this, OnlineGameActivity.class);
+        startActivity(intent);
     }
 
     private void startSignInIntent() {
@@ -148,12 +148,10 @@ public class MultiplayerActivity extends AppCompatActivity implements View.OnCli
 
         } else if (requestCode == RC_LOOK_AT_MATCHES) {
             if (resultCode != Activity.RESULT_OK) {
-                Toast.makeText(this, "There are no available games", Toast.LENGTH_LONG).show();
                 return;
             }
 
             TurnBasedMatch match = data.getParcelableExtra(Multiplayer.EXTRA_TURN_BASED_MATCH);
-
             if (match != null) {
                 turnBasedMatch = match;
                 multiplayerMatch.turnBasedMatch = turnBasedMatch;

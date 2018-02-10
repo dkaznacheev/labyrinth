@@ -11,7 +11,7 @@ import ru.spbau.labyrinth.networkMultiplayer.MultiplayerMatch;
 
 public class OnlineGameActivity extends GameActivity {
     private final static String PREFS_NAME = "LocalSave";
-    private MultiplayerMatch match;
+    private MultiplayerMatch match = MultiplayerMatch.getInstance();
 
     @Override
     protected void finishGame(int winner) {
@@ -20,11 +20,36 @@ public class OnlineGameActivity extends GameActivity {
 
     @Override
     protected void initializeGameState() {
+        Intent intent = getIntent();
+        intent.putExtra("playerNum", match.turnBasedMatch.getParticipantIds().size());
+        match.onInitiateMatch(match.turnBasedMatch);
+        if (match.turnBasedMatch.getData() == null) {
+            state = new GameState(intent);
+        } else {
+            state = GameState.deserialize(new String(match.turnBasedMatch.getData()));
+        }
 
+        if (state == null) {
+            finish();
+            return;
+        }
+
+        currentDrawnPlayerNum = match.getPlayersNumber();
+        if (currentDrawnPlayerNum == -1) {
+            finish();
+            return;
+        }
+
+        final ImageView backgroundImageView = findViewById(R.id.background);
+        backgroundImageView.setImageResource(backgrounds[state.getCurrentPlayerNum()]);
     }
 
     @Override
     protected void processNextTurn(Model.Turn turn) {
+        if (!match.isPlayersTurn()) {
+            return;
+        }
+
         final DirectionChooseView moveDirectionChooseView = findViewById(R.id.moveDirView);
         final DirectionChooseView shootDirectionChooseView = findViewById(R.id.shootDirView);
         final ImageView backgroundImageView = findViewById(R.id.background);
@@ -34,12 +59,10 @@ public class OnlineGameActivity extends GameActivity {
 
         int turnResult = state.updateTurn(turn);
         if (turnResult != -1) {
-            finishGame(turnResult);
+            match.finish();
+            return;
         }
-
-        backgroundImageView.setImageResource(backgrounds[state.getCurrentPlayerNum()]);
-        currentDrawnPlayerNum = state.getCurrentPlayerNum();
-
+        match.sendData(state.serialize().getBytes());
     }
 
     @Override
@@ -53,5 +76,13 @@ public class OnlineGameActivity extends GameActivity {
         editor.putBoolean("saved", true);
 
         editor.commit();
+    }
+
+    public void applyData(byte[] data) {
+        if (data == null) {
+            match.onInitiateMatch(match.turnBasedMatch);
+            return;
+        }
+        state = GameState.deserialize(new String(data));
     }
 }
