@@ -56,11 +56,16 @@ public class GameState {
         turns[currentPlayerNum] = turn;
         currentPlayerNum++;
         if (currentPlayerNum == playerNum) {
-            log.addRound(turns);
-            players = model.processTurnMultiplayer(turns);
-            turns = new Model.Turn[playerNum];
+            updateRound(turns);
             currentPlayerNum = 0;
+            turns = new Model.Turn[playerNum];
         }
+        return model.getWinner();
+    }
+
+    public int updateRound(Turn[] turns) {
+        log.addRound(turns);
+        players = model.processTurnMultiplayer(turns);
         return model.getWinner();
     }
 

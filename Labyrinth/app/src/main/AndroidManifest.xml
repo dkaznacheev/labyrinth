@@ -12,6 +12,9 @@
         <activity
             android:name=".LocalGameActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".OnlineGameActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".LogActivity" />
         <activity android:name=".StartActivity">
             <intent-filter>
