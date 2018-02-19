@@ -120,7 +120,7 @@ public abstract class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             Intent intent = new Intent(GameActivity.this, LogActivity.class);
-            intent.putExtra("log", Log.serialize(state.getLog()));
+            intent.putExtra("log", Log.serialize(state.log));
             startActivity(intent);
             }
         });
@@ -131,7 +131,7 @@ public abstract class GameActivity extends AppCompatActivity {
             public void onClick(View view) {
                 currentDrawnPlayerNum--;
                 if (currentDrawnPlayerNum < 0) {
-                    currentDrawnPlayerNum = state.getPlayerNum() - 1;
+                    currentDrawnPlayerNum = state.playerNum - 1;
                 }
 
                 updatePlayerView(true);
@@ -143,7 +143,7 @@ public abstract class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentDrawnPlayerNum++;
-                if (currentDrawnPlayerNum >= state.getPlayerNum()) {
+                if (currentDrawnPlayerNum >= state.playerNum) {
                     currentDrawnPlayerNum = 0;
                 }
 

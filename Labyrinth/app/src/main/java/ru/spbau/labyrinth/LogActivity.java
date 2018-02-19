@@ -1,9 +1,8 @@
 package ru.spbau.labyrinth;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -11,13 +10,12 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import ru.spbau.labyrinth.model.Log;
-import ru.spbau.labyrinth.model.Model.*;
+import ru.spbau.labyrinth.model.Model.Direction;
+import ru.spbau.labyrinth.model.Model.Turn;
 
 public class LogActivity extends AppCompatActivity {
     private final static int playerColors[] = new int[]{
@@ -34,7 +32,7 @@ public class LogActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
-        TableLayout table = (TableLayout) findViewById(R.id.table);
+        TableLayout table = findViewById(R.id.table);
 
         Intent intent = getIntent();
         String json = intent.getStringExtra("log");
@@ -60,7 +58,7 @@ public class LogActivity extends AppCompatActivity {
             table.addView(row);
         }
 
-        Button backButton = (Button) findViewById(R.id.backButton);
+        Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

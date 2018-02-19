@@ -7,7 +7,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
 import ru.spbau.labyrinth.R;
-import ru.spbau.labyrinth.customviews.FieldView;
 
 public class OuterScrollView extends ScrollView {
     public HorizontalScrollView horizontalScrollView;

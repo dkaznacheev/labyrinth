@@ -4,35 +4,24 @@ import android.content.Intent;
 
 import com.google.gson.Gson;
 
-import ru.spbau.labyrinth.model.Model.*;
+import ru.spbau.labyrinth.model.Model.Player;
+import ru.spbau.labyrinth.model.Model.Turn;
 
 public class GameState {
-    public Model getModel() {
-        return model;
-    }
-
     public Player[] getPlayers() {
         return players;
-    }
-
-    public Log getLog() {
-        return log;
     }
 
     public int getCurrentPlayerNum() {
         return currentPlayerNum;
     }
 
-    public int getPlayerNum() {
-        return playerNum;
-    }
-
-    private Model model;
+    private final Model model;
     private Player[] players;
     private Turn[] turns;
-    private Log log;
+    public final Log log;
     private int currentPlayerNum;
-    private final int playerNum;
+    public final int playerNum;
 
     public GameState(Intent data) {
         playerNum = data.getIntExtra("playerNum", 0);
@@ -60,13 +49,13 @@ public class GameState {
             currentPlayerNum = 0;
             turns = new Model.Turn[playerNum];
         }
-        return model.getWinner();
+        return model.getWinnerId();
     }
 
     public int updateRound(Turn[] turns) {
         log.addRound(turns);
         players = model.processTurnMultiplayer(turns);
-        return model.getWinner();
+        return model.getWinnerId();
     }
 
     public String serialize() {
@@ -74,7 +63,7 @@ public class GameState {
     }
 
     public String getTreasureOwner() {
-        int treasureOwner = model.getTreasureOwner();
+        int treasureOwner = model.getTreasureOwnerId();
         String owner = "Nobody";
         if (treasureOwner != -1) {
             owner = players[treasureOwner].getName();

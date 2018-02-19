@@ -1,11 +1,7 @@
 package ru.spbau.labyrinth;
 
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +12,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import ru.spbau.labyrinth.customviews.EditFieldView;
-import ru.spbau.labyrinth.db.DBHelper;
 import ru.spbau.labyrinth.customviews.OuterScrollView;
+import ru.spbau.labyrinth.db.DBHelper;
 import ru.spbau.labyrinth.model.field.Field;
 
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
@@ -69,7 +65,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             public void onClick(DialogInterface dialogInterface, int i) {
                 String name = input.getText().toString();
                 if (!name.equals("")) {
-                    long rowID = dbHelper.saveField(field, name);
+                    dbHelper.saveField(field, name);
                 }
             }
         });

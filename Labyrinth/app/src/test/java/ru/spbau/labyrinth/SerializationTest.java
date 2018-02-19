@@ -5,7 +5,7 @@ import org.junit.Test;
 import ru.spbau.labyrinth.model.Model;
 import ru.spbau.labyrinth.model.field.Field;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class SerializationTest {
     @Test

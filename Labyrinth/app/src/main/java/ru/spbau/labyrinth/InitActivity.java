@@ -1,9 +1,8 @@
 package ru.spbau.labyrinth;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -48,11 +47,11 @@ public class InitActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
-        final Button addButton = (Button)findViewById(R.id.addPlayerButton);
-        final Button deleteButton = (Button)findViewById(R.id.deletePlayerButton);
-        final Button startButton = (Button)findViewById(R.id.startButton);
+        final Button addButton = findViewById(R.id.addPlayerButton);
+        final Button deleteButton = findViewById(R.id.deletePlayerButton);
+        final Button startButton = findViewById(R.id.startButton);
 
-        final LinearLayout playersLayout = (LinearLayout)findViewById(R.id.playersLayout);
+        final LinearLayout playersLayout = findViewById(R.id.playersLayout);
 
         playerEdits = new EditText[MAX_PLAYERS];
         for (int i = 0; i < MAX_PLAYERS; i++) {

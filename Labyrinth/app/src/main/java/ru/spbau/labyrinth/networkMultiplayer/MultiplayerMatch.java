@@ -1,6 +1,5 @@
 package ru.spbau.labyrinth.networkMultiplayer;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -14,8 +13,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
-
-import static android.support.v4.app.ActivityCompat.startActivityForResult;
 
 public class MultiplayerMatch {
     private static MultiplayerMatch instance;

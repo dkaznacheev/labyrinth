@@ -23,13 +23,13 @@ public class EndGameActivity extends AppCompatActivity {
         int winner = intent.getIntExtra("winnerId", 0);
         String name = intent.getStringExtra("winnerName");
 
-        ImageView background = (ImageView) findViewById(R.id.background);
+        ImageView background = findViewById(R.id.background);
         background.setImageResource(backgrounds[winner]);
-        TextView endTextView = (TextView) findViewById(R.id.endTextView);
+        TextView endTextView = findViewById(R.id.endTextView);
 
         endTextView.setText("GAME OVER\nWinner:\n" + name);
 
-        Button menuButton = (Button) findViewById(R.id.menuButton);
+        Button menuButton = findViewById(R.id.menuButton);
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -6,23 +6,23 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import ru.spbau.labyrinth.model.field.*;
+import ru.spbau.labyrinth.model.field.Field;
 
 public class Model {
     private Player[] players;
     private Field field;
     private Set<Integer> killed = new HashSet<>();
 
-    public int getWinner() {
-        return winner;
+    public int getWinnerId() {
+        return winnerId;
     }
 
-    private int winner = -1;
+    private int winnerId = -1;
 
     public enum Direction {UP, DOWN, LEFT, RIGHT, NONE}
 
-    public int getTreasureOwner() {
-        return field.getTreasureOwner();
+    public int getTreasureOwnerId() {
+        return field.getTreasureOwnerId();
     }
 
     private void processTurn(Turn turn) {
@@ -31,8 +31,8 @@ public class Model {
         int newx = players[index].getX() + d[0];
         int newy = players[index].getY() + d[1];
 
-        if (newx == field.getTreasureX() && newy == field.getTreasureY() && field.getTreasureOwner() == -1) {
-            field.setTreasureOwner(index);
+        if (newx == field.getTreasureX() && newy == field.getTreasureY() && field.getTreasureOwnerId() == -1) {
+            field.setTreasureOwnerId(index);
         }
 
         if (newx == players[index].getX() && newy == players[index].getY()) {
@@ -46,14 +46,14 @@ public class Model {
                 players[index].setFieldState(newx, newy, field.getState(newx, newy));
             }
 
-            if (field.getTreasureOwner() == index) {
+            if (field.getTreasureOwnerId() == index) {
                 field.setTreasurePos(newx, newy);
                 players[index].setTreasurePos(newx, newy);
             }
 
             if (field.getState(newx, newy) == Field.State.MINOTAUR) {
-                if (field.getTreasureOwner() == index) {
-                    field.setTreasureOwner(-1);
+                if (field.getTreasureOwnerId() == index) {
+                    field.setTreasureOwnerId(-1);
                     field.setTreasurePos(newx, newy);
                     players[index].setTreasurePos(newx, newy);
                 }
@@ -63,28 +63,24 @@ public class Model {
             }
 
             //TODO what if several number of players stepped on the cell with treasure in the same time
-            if (newx == field.getTreasureX() && newy == field.getTreasureY() && field.getTreasureOwner() == -1) {
-                field.setTreasureOwner(index);
+            if (newx == field.getTreasureX() && newy == field.getTreasureY() && field.getTreasureOwnerId() == -1) {
+                field.setTreasureOwnerId(index);
             }
 
 
         } else {
+            boolean playerWon = false;
             int ind[] = getBorderInd(players[index].getX(), players[index].getY(), newx, newy);
-            if (index == field.getTreasureOwner()) {
-                if (ind[0] == 0) {
-                    if (field.isExitBorderX(ind[1], ind[2])) {
-                        players[index].markThatPlayerWin();
-                        winner = index;
-                    }
-                } else {
-                    if (field.isExitBorderY(ind[1], ind[2])) {
-                        players[index].markThatPlayerWin();
-                        winner = index;
-                    }
+            if (index == field.getTreasureOwnerId()) {
+                if    ((ind[0] == 0 && field.isExitBorderX(ind[1], ind[2]))
+                    || (ind[0] != 0 && field.isExitBorderY(ind[1], ind[2]))) {
+                        playerWon = true;
+                        winnerId = index;
+
                 }
             }
 
-            if (!players[index].playerWin) {
+            if (playerWon) {
                 if (ind[0] == 0) {
                     if (!field.isExitBorderX(ind[1], ind[2])) {
                         players[index].setFieldBorderX(ind[1], ind[2]);
@@ -111,10 +107,10 @@ public class Model {
         }
 
         for (Integer killedId : killed) {
-            if (killedId == field.getTreasureOwner()) {
+            if (killedId == field.getTreasureOwnerId()) {
                 field.setTreasurePos(players[killedId].getX(), players[killedId].getY());
                 players[killedId].setTreasurePos(players[killedId].getX(), players[killedId].getY());
-                field.setTreasureOwner(-1);
+                field.setTreasureOwnerId(-1);
             }
             players[killedId].setX(field.getHospitalX());
             players[killedId].setY(field.getHospitalY());
@@ -218,7 +214,7 @@ public class Model {
         }
         st.add(pos[0] * fieldSize + pos[1]);
         field.setTreasurePos(pos[0], pos[1]);
-        field.setTreasureOwner(-1);
+        field.setTreasureOwnerId(-1);
 
         return players;
     }
@@ -237,13 +233,13 @@ public class Model {
         int side = random.nextInt() % 4;
         int pos = random.nextInt() % (fieldSize - 1);
         if (side == 0) {
-            f.setBorderPos(0, 0, pos);
+            f.setBorderPos(Field.BorderType.HORIZONTAL, 0, pos);
         } else if (side == 2) {
-            f.setBorderPos(0, fieldSize, pos);
+            f.setBorderPos(Field.BorderType.HORIZONTAL, fieldSize, pos);
         } else if (side == 1) {
-            f.setBorderPos(1, pos, 0);
+            f.setBorderPos(Field.BorderType.VERTICAL, pos, 0);
         } else {
-            f.setBorderPos(1, pos, fieldSize);
+            f.setBorderPos(Field.BorderType.VERTICAL, pos, fieldSize);
         }
 
         return f;
@@ -296,12 +292,10 @@ public class Model {
 
     //Inner but not nested because players is linked to model
     public class Player {
-        private int x, y, hp, cartridgesCnt, id;
+        private int x, y, cartridgesCnt, id;
         private int initialX, initialY;
         private final String name;
         private Field fieldView;
-        private boolean hasTreasure;
-        private boolean playerWin;
 
         Player(int posx, int posy, String name, int id) {
             this.x = posx;
@@ -312,7 +306,6 @@ public class Model {
             this.id = id;
             fieldView = new Field(Model.this.field.getSize());
             cartridgesCnt = 3;
-            hasTreasure = false;
             fieldView.setTreasurePos(-1, -1);
             for (int i = 0; i < fieldView.getSize(); i++) {
                 for (int j = 0; j < fieldView.getSize(); j++) {
@@ -323,14 +316,6 @@ public class Model {
             fieldView.setState(x, y, Field.State.NOTHING);
         }
 
-        public boolean hasTreasure() {
-            return hasTreasure;
-        }
-
-        public void changeTreasureOwningState(boolean isTreasureOwner) {
-            hasTreasure = isTreasureOwner;
-        }
-
         public int getX() {
             return x;
         }
@@ -339,48 +324,40 @@ public class Model {
             return y;
         }
 
-        public void setX(int x) {
+        private void setX(int x) {
             this.x = x;
         }
 
-        public void setY(int y) {
+        private void setY(int y) {
             this.y = y;
         }
 
-        public boolean hasCatridge() {
+        private boolean hasCatridge() {
             return cartridgesCnt > 0;
         }
 
-        public void spendCartridge() {
+        private void spendCartridge() {
             cartridgesCnt--;
         }
 
-        public void setFieldState(int x, int y, Field.State state) {
+        private void setFieldState(int x, int y, Field.State state) {
             fieldView.setState(x, y, state);
         }
 
-        public Field.State getFieldState(int x, int y) {
+        private Field.State getFieldState(int x, int y) {
             return fieldView.getState(x, y);
         }
 
-        public void setFieldBorderX(int row, int column) {
+        private void setFieldBorderX(int row, int column) {
             fieldView.addBorderX(row, column);
         }
 
-        public void setFieldBorderY(int row, int column) {
+        private void setFieldBorderY(int row, int column) {
             fieldView.addBorderY(row, column);
         }
 
         public int getCartridgesCnt() {
             return cartridgesCnt;
-        }
-
-        public boolean getFieldBorderX(int row, int column) {
-            return fieldView.hasBorderX(row, column);
-        }
-
-        public boolean getFieldBorderY(int row, int column) {
-            return fieldView.hasBorderY(row, column);
         }
 
         public int getId() {
@@ -399,11 +376,7 @@ public class Model {
             return fieldView;
         }
 
-        public void markThatPlayerWin() {
-            playerWin = true;
-        }
-
-        public void setTreasurePos(int x, int y) {
+        private void setTreasurePos(int x, int y) {
             fieldView.setTreasurePos(x, y);
         }
 

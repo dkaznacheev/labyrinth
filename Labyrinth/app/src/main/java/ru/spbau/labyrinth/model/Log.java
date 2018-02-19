@@ -3,7 +3,8 @@ package ru.spbau.labyrinth.model;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import ru.spbau.labyrinth.model.Model.*;
+
+import ru.spbau.labyrinth.model.Model.Turn;
 
 public class Log {
     private final int players;

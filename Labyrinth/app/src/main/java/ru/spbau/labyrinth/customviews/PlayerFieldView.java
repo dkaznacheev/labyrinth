@@ -19,7 +19,6 @@ public class PlayerFieldView extends FieldView {
     private Paint paint;
     private Direction moveDir = Direction.NONE;
     private Direction shootDir = Direction.NONE;
-    public float scrolledY = 0;
 
     private final static int playerColors[] = new int[]{Color.RED,
             Color.BLUE,
@@ -27,10 +26,6 @@ public class PlayerFieldView extends FieldView {
             Color.YELLOW};
 
     protected Player myPlayer;
-
-    public void scrollY (float y) {
-        scrolledY = y;
-    }
 
     private void init() {
         paint = new Paint();

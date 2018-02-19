@@ -11,9 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 
-
-import com.google.gson.Gson;
-
 import ru.spbau.labyrinth.R;
 import ru.spbau.labyrinth.model.field.Field;
 import ru.spbau.labyrinth.model.field.Field.State;
@@ -21,8 +18,6 @@ import ru.spbau.labyrinth.model.field.Field.State;
 
 public class EditFieldView extends FieldView {
     private static final int PRECISION = 35;
-    private State cellState = State.NOTHING;
-    private Paint paint;
 
     public EditFieldView(Context context) {
         super(context);
@@ -31,7 +26,6 @@ public class EditFieldView extends FieldView {
 
     private void init() {
         field = new Field(10);
-        paint = new Paint();
         setOnTouchListener(touchListener);
     }
 
@@ -172,10 +166,6 @@ public class EditFieldView extends FieldView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-    }
-
-    public static String serialize(EditFieldView editFieldView) {
-        return Field.serialize(editFieldView.getField());
     }
 
     public Field getField() {

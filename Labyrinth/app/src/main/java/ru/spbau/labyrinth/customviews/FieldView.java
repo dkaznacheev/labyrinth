@@ -6,17 +6,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 
 import ru.spbau.labyrinth.R;
-import ru.spbau.labyrinth.model.Model;
-import ru.spbau.labyrinth.model.Model.Direction;
-import ru.spbau.labyrinth.model.Model.Player;
 import ru.spbau.labyrinth.model.field.Field;
 
 public class FieldView extends View {

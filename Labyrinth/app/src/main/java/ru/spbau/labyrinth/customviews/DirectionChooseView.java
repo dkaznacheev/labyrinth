@@ -4,16 +4,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
 import java.util.EnumMap;
 import java.util.Map;
 
-import ru.spbau.labyrinth.model.Model.*;
+import ru.spbau.labyrinth.model.Model.Direction;
 
 public class DirectionChooseView extends View {
     private Map<Direction, Integer> positionX;

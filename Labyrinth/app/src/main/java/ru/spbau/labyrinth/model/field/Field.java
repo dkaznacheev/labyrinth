@@ -1,26 +1,25 @@
 package ru.spbau.labyrinth.model.field;
 
 import com.google.gson.Gson;
+
 import java.util.Arrays;
 
 /**
  * class Field. Contains information about playing field. Note: field is square.
  */
 public class Field {
-    public enum State {UNKNOWN, NOTHING, MINOTAUR, HOSPITAL} // nothing, hospital etc.
+    public enum State {UNKNOWN, NOTHING, MINOTAUR, HOSPITAL}
+    public enum BorderType {HORIZONTAL, VERTICAL}
 
-    private int size;
-    private State[][] field;
-    private boolean[][] borderX;
-    private boolean[][] borderY;
-    private int treasureX;
-    private int treasureY;
-    private int treasureOwner;
-    private int hospitalX;
-    private int hospitalY;
-    private int exitBorderType; // 0 = X, 1 = Y
-    private int exitBorderX;
-    private int exitBorderY;
+    private final int size;
+    private final State[][] field;
+    private final boolean[][] borderX; //an array of horizontal walls, from topmost to downmost
+    private final boolean[][] borderY; //an array of vertical walls, from leftmost to rightmost
+    private final Point treasure;
+    private final Point hospital;
+    private final Point exitBorder;
+    private int treasureOwnerId;
+    private BorderType exitBorderType;
 
     /**
      * Field constructor, creates new empty field.
@@ -29,10 +28,12 @@ public class Field {
      */
     public Field(int fieldSize) {
         size = fieldSize;
-        field = new State[size][fieldSize];
-        borderX = new boolean[fieldSize + 1][fieldSize];
-        borderY = new boolean[fieldSize][fieldSize + 1];
-
+        field = new State[size][size];
+        borderX = new boolean[size + 1][size];
+        borderY = new boolean[size][size + 1];
+        treasure = new Point();
+        hospital = new Point();
+        exitBorder = new Point();
         for (int i = 0; i < size; i++) {
             Arrays.fill(field[i], State.NOTHING);
         }
@@ -56,11 +57,11 @@ public class Field {
     }
 
     public void addBorderX(int row, int column) {
-        borderX[row][column] = true;
+        setBorderX(row, column, true);
     }
 
     public void addBorderY(int row, int column) {
-        borderY[row][column] = true;
+        setBorderY(row, column, true);
     }
 
     public void setBorderX(int row, int column, boolean value){
@@ -80,70 +81,67 @@ public class Field {
     }
 
     public void setTreasurePos(int row, int column) {
-        treasureX = row;
-        treasureY = column;
+        treasure.x = row;
+        treasure.y = column;
     }
 
-    public boolean isOnTreasure(int row, int coluum) {
-        return row == treasureX && coluum == treasureY;
+    public int getTreasureOwnerId() {
+        return treasureOwnerId;
     }
 
-    public int getTreasureOwner() {
-        return treasureOwner;
-    }
-
-    public void setTreasureOwner(int ownerId) {
-        treasureOwner = ownerId;
+    public void setTreasureOwnerId(int ownerId) {
+        treasureOwnerId = ownerId;
     }
 
     public int getTreasureX() {
-        return treasureX;
+        return treasure.x;
     }
 
     public int getTreasureY() {
-        return treasureY;
+        return treasure.y;
     }
 
     public int getHospitalX() {
-        return hospitalX;
+        return hospital.x;
     }
 
     public int getHospitalY() {
-        return hospitalY;
+        return hospital.y;
     }
 
     public void setHospitalPos(int row, int column) {
-        hospitalX = row;
-        hospitalY = column;
+        hospital.x = row;
+        hospital.y = column;
     }
 
     public boolean cellIsInField(int row, int column) {
         return row >= 0 && column >= 0 && row < size && column < size;
     }
 
-    public void setBorderPos(int type, int row, int column) {
+    public void setBorderPos(BorderType type, int row, int column) {
         exitBorderType = type;
-        exitBorderX = row;
-        exitBorderY = column;
+        exitBorder.x = row;
+        exitBorder.y = column;
     }
 
     public boolean isExitBorderX(int row, int column) {
-        return (exitBorderType == 0) && (row == exitBorderX) && (column == exitBorderY);
+        return (exitBorderType == BorderType.HORIZONTAL) && (row == exitBorder.x) && (column == exitBorder.y);
     }
 
     public boolean isExitBorderY(int row, int column) {
-        return (exitBorderType == 1) && (row == exitBorderX) && (column == exitBorderY);
+        return (exitBorderType == BorderType.VERTICAL) && (row == exitBorder.x) && (column == exitBorder.y);
     }
 
     public static String serialize(Field field) {
-        Gson gson = new Gson();
-        String json = gson.toJson(field);
-        return json;
+        return new Gson().toJson(field);
     }
 
     public static Field deserialize(String json) {
-        Gson gson = new Gson();
-        Field field = gson.fromJson(json, Field.class);
-        return field;
+        return new Gson().fromJson(json, Field.class);
+    }
+
+    private class Point {
+        int x;
+        int y;
     }
 }
