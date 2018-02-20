@@ -42,7 +42,6 @@ public abstract class GameActivity extends AppCompatActivity {
 
         moveDirectionChooseView.setPlayerNum(state.getCurrentPlayerNum());
         shootDirectionChooseView.setPlayerNum(state.getCurrentPlayerNum());
-        
         if (currentDrawnPlayerNum == state.getCurrentPlayerNum()) {
             cartridgesTextView.setTypeface(null, Typeface.BOLD);
             currentPlayerNameTextView.setTypeface(null, Typeface.BOLD);

@@ -20,11 +20,9 @@ public class OnlineGameActivity extends GameActivity {
 
     @Override
     protected void initializeGameState() {
-        Intent intent = getIntent();
-        intent.putExtra("playerNum", match.turnBasedMatch.getParticipantIds().size());
         match.onInitiateMatch(match.turnBasedMatch);
         if (match.turnBasedMatch.getData() == null) {
-            state = new GameState(intent);
+            state = new GameState(new String[match.turnBasedMatch.getParticipantIds().size()]);
         } else {
             state = GameState.deserialize(new String(match.turnBasedMatch.getData()));
         }

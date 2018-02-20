@@ -9,6 +9,8 @@ import android.widget.Button;
 
 import ru.spbau.labyrinth.networkMultiplayer.MultiplayerActivity;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 public class StartActivity extends AppCompatActivity {
     private static final int PLAYERNAMES_REQUEST = 1;
     private final static String PREFS_NAME = "LocalSave";
@@ -76,7 +78,8 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private boolean isSavedGame() {
-        SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences savedGame = getDefaultSharedPreferences(getApplicationContext());
+        boolean b = savedGame.getBoolean("saved", false);
         return savedGame.getBoolean("saved", false);
     }
 

@@ -118,7 +118,7 @@ public class Field {
         return row >= 0 && column >= 0 && row < size && column < size;
     }
 
-    public void setBorderPos(BorderType type, int row, int column) {
+    public void setExitBorderPos(BorderType type, int row, int column) {
         exitBorderType = type;
         exitBorder.x = row;
         exitBorder.y = column;

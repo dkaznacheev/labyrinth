@@ -18,14 +18,24 @@ import ru.spbau.labyrinth.model.field.Field.State;
 
 public class EditFieldView extends FieldView {
     private static final int PRECISION = 35;
-
+    protected static final int MAZE_OFFSET_X = 3;
+    protected static final int MAZE_OFFSET_Y = 3;
     public EditFieldView(Context context) {
         super(context);
         init();
     }
 
     private void init() {
-        field = new Field(10);
+        offsetX = MAZE_OFFSET_X;
+        offsetY = MAZE_OFFSET_Y;
+        int size = 5;
+        field = new Field(size);
+        for (int i = 0; i < size; i++) {
+            field.addBorderX(0, i);
+            field.addBorderX(size, i);
+            field.addBorderY(i, 0);
+            field.addBorderY(i, size);
+        }
         setOnTouchListener(touchListener);
     }
 
@@ -122,18 +132,33 @@ public class EditFieldView extends FieldView {
 
     void processClick(float x, float y) {
         if (touchedCell(x, y)) {
-            int fx = (int) x / CELL_SIZE;
-            int fy = (int) y / CELL_SIZE;
+            int fx = (int) x / CELL_SIZE - offsetX;
+            int fy = (int) y / CELL_SIZE - offsetY;
+            if (       fx < 0
+                    || fx >= field.getSize()
+                    || fy < 0
+                    || fy >= field.getSize())
+                return;
             chooseState(fx, fy);
         }
         else if (touchedVerticalWall(x, y)){
-            int wx = ((int) x + PRECISION + 1) / CELL_SIZE;
-            int wy = ((int) y + PRECISION + 1)/ CELL_SIZE;
+            int wx = ((int) x + PRECISION + 1) / CELL_SIZE - offsetX;
+            int wy = ((int) y + PRECISION + 1) / CELL_SIZE - offsetY;
+            if (       wx < 0
+                    || wx > field.getSize()
+                    || wy < 0
+                    || wy >= field.getSize())
+                return;
             field.setBorderY(wy, wx, !field.hasBorderY(wy, wx));
         }
         else if (touchedHorizontalWall(x, y)){
-            int wx = ((int) x + PRECISION + 1) / CELL_SIZE;
-            int wy = ((int) y + PRECISION + 1)/ CELL_SIZE;
+            int wx = ((int) x + PRECISION + 1) / CELL_SIZE - offsetX;
+            int wy = ((int) y + PRECISION + 1) / CELL_SIZE - offsetY;
+            if (       wx < 0
+                    || wx >= field.getSize()
+                    || wy < 0
+                    || wy > field.getSize())
+                return;
             field.setBorderX(wy, wx, !field.hasBorderX(wy, wx));
         }
 

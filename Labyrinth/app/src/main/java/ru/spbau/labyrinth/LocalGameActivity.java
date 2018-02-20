@@ -1,12 +1,16 @@
 package ru.spbau.labyrinth;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import ru.spbau.labyrinth.customviews.DirectionChooseView;
 import ru.spbau.labyrinth.model.GameState;
 import ru.spbau.labyrinth.model.Model;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class LocalGameActivity extends GameActivity {
     private final static String PREFS_NAME = "LocalSave";
@@ -18,9 +22,8 @@ public class LocalGameActivity extends GameActivity {
     }
 
     private void clearSave() {
-        SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences savedGame = getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = savedGame.edit();
-        editor.clear();
         editor.putBoolean("saved", false);
         editor.commit();
     }
@@ -30,10 +33,15 @@ public class LocalGameActivity extends GameActivity {
         Intent intent = getIntent();
 
         if (intent.getBooleanExtra("isNewGame", true)) {
-            state = new GameState(intent);
+            int playerNum = intent.getIntExtra("playerNum", 0);
+            String[] names = new String[playerNum];
+            for (int i = 0; i < playerNum; i++) {
+                names[i] = intent.getStringExtra("player" + Integer.toString(i));
+            }
+            state = new GameState(names);
         } else {
             state = GameState.deserialize(
-                    getSharedPreferences(PREFS_NAME, 0)
+                    getDefaultSharedPreferences(getApplicationContext())
                             .getString("gameState", null));
         }
         if (state == null) {
@@ -70,7 +78,7 @@ public class LocalGameActivity extends GameActivity {
     protected void onPause(){
         super.onPause();
 
-        SharedPreferences savedGame = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences savedGame = getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = savedGame.edit();
 
         editor.putString("gameState", state.serialize());

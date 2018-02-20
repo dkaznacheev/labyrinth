@@ -63,7 +63,7 @@ public class Model {
             }
 
             //TODO what if several number of players stepped on the cell with treasure in the same time
-            if (newx == field.getTreasureX() && newy == field.getTreasureY() && field.getTreasureOwnerId() == -1) {
+            if (players[index].getX() == field.getTreasureX() && players[index].getY() == field.getTreasureY() && field.getTreasureOwnerId() == -1) {
                 field.setTreasureOwnerId(index);
             }
 
@@ -80,7 +80,7 @@ public class Model {
                 }
             }
 
-            if (playerWon) {
+            if (!playerWon) {
                 if (ind[0] == 0) {
                     if (!field.isExitBorderX(ind[1], ind[2])) {
                         players[index].setFieldBorderX(ind[1], ind[2]);
@@ -220,7 +220,7 @@ public class Model {
     }
 
     // TODO something less genius :)
-    private Field generateRandomField(Random random, int fieldSize) {
+    public Field generateRandomField(Random random, int fieldSize) {
         Field f = new Field(fieldSize);
 
         for (int i = 0; i < fieldSize; i++) {
@@ -230,16 +230,16 @@ public class Model {
             f.addBorderY(i, fieldSize);
         }
 
-        int side = random.nextInt() % 4;
-        int pos = random.nextInt() % (fieldSize - 1);
+        int side = Math.abs(random.nextInt()) % 4;
+        int pos = Math.abs(random.nextInt()) % (fieldSize);
         if (side == 0) {
-            f.setBorderPos(Field.BorderType.HORIZONTAL, 0, pos);
+            f.setExitBorderPos(Field.BorderType.HORIZONTAL, 0, pos);
         } else if (side == 2) {
-            f.setBorderPos(Field.BorderType.HORIZONTAL, fieldSize, pos);
+            f.setExitBorderPos(Field.BorderType.HORIZONTAL, fieldSize, pos);
         } else if (side == 1) {
-            f.setBorderPos(Field.BorderType.VERTICAL, pos, 0);
+            f.setExitBorderPos(Field.BorderType.VERTICAL, pos, 0);
         } else {
-            f.setBorderPos(Field.BorderType.VERTICAL, pos, fieldSize);
+            f.setExitBorderPos(Field.BorderType.VERTICAL, pos, fieldSize);
         }
 
         return f;
