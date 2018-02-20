@@ -194,6 +194,8 @@ public class MultiplayerActivity extends AppCompatActivity implements View.OnCli
         signOutButton.setOnClickListener(this);
         startMatchButton.setOnClickListener(this);
         checkGamesButton.setOnClickListener(this);
+
+        startSignInIntent();
     }
 
     @Override
@@ -283,7 +285,7 @@ public class MultiplayerActivity extends AppCompatActivity implements View.OnCli
        if (turnBasedMultiplayerClient == null) {
             return;
        }
-       turnBasedMultiplayerClient.getSelectOpponentsIntent(1, 1, true)
+       turnBasedMultiplayerClient.getSelectOpponentsIntent(1, 1, false)
                .addOnSuccessListener(new OnSuccessListener<Intent>() {
                     @Override
                     public void onSuccess(Intent intent) {

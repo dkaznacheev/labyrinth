@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
+
 public class MultiplayerMatch {
     private static MultiplayerMatch instance;
 
@@ -31,6 +32,7 @@ public class MultiplayerMatch {
     public TurnBasedMultiplayerClient turnBasedMultiplayerClient;
     public InvitationsClient invitationsClient;
     public TurnBasedMatch turnBasedMatch;
+    public TurnBasedMatch updatedTurnBasedMatch;
 
     private boolean needToUpdateRound = false;
     private boolean sendingData = false;
@@ -59,7 +61,6 @@ public class MultiplayerMatch {
         String myParticipantId = turnBasedMatch.getParticipantId(playerId);
 
         ArrayList<String> participantIds = turnBasedMatch.getParticipantIds();
-
         int desiredIndex = -1;
 
         for (int i = 0; i < participantIds.size(); i++) {
@@ -91,36 +92,8 @@ public class MultiplayerMatch {
     }
 
     //package private
-    void updateMatch(TurnBasedMatch match) {
-        turnBasedMatch = match;
-        int status = match.getStatus();
-        int turnStatus = match.getTurnStatus();
-
-        switch (status) {
-            case TurnBasedMatch.MATCH_STATUS_CANCELED:
-                return;
-            case TurnBasedMatch.MATCH_STATUS_EXPIRED:
-                return;
-            case TurnBasedMatch.MATCH_STATUS_AUTO_MATCHING:
-                return;
-            case TurnBasedMatch.MATCH_STATUS_COMPLETE:
-                if (turnStatus == TurnBasedMatch.MATCH_TURN_STATUS_COMPLETE) {
-                    break;
-                }
-        }
-
-        switch (turnStatus) {
-            case TurnBasedMatch.MATCH_TURN_STATUS_MY_TURN:
-                if (!sendingData){
-
-                }
-                return;
-            case TurnBasedMatch.MATCH_TURN_STATUS_THEIR_TURN:
-                if (!sendingData)
-                    //controller.applyData(curMatch.getData());
-                break;
-            case TurnBasedMatch.MATCH_TURN_STATUS_INVITED:
-        }
+    public void updateMatch(TurnBasedMatch match) {
+        updatedTurnBasedMatch = match;
     }
 
     public void sendData(byte[] data) {

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import ru.spbau.labyrinth.customviews.DirectionChooseView;
 import ru.spbau.labyrinth.customviews.OuterScrollView;
@@ -26,7 +27,7 @@ public abstract class GameActivity extends AppCompatActivity {
             R.drawable.labyrinth_green,
             R.drawable.labyrinth_yellow};
 
-    private void updatePlayerView(boolean scroll) {
+    protected void updatePlayerView(boolean scroll) {
         printTreasureOwner();
         final OuterScrollView outerScrollView = findViewById(R.id.outerScroll);
         final HorizontalScrollView horizontalScrollView = findViewById(R.id.horizontalScroll);
@@ -119,6 +120,11 @@ public abstract class GameActivity extends AppCompatActivity {
         logButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+            if (GameActivity.this instanceof OnlineGameActivity) {
+                Toast.makeText(GameActivity.this, "Online", Toast.LENGTH_LONG).show();
+                OnlineGameActivity onlineGameActivity = (OnlineGameActivity) GameActivity.this;
+                onlineGameActivity.updateMatch();
+            }
             Intent intent = new Intent(GameActivity.this, LogActivity.class);
             intent.putExtra("log", Log.serialize(state.log));
             startActivity(intent);
