@@ -20,9 +20,23 @@ import ru.spbau.labyrinth.db.DBHelper;
 import ru.spbau.labyrinth.model.field.Field;
 
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
-
+    private static final int MAZE_REQUEST = 2;
     static DBHelper dbHelper;
     static EditFieldView editFieldView;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MAZE_REQUEST) {
+            if (data == null || resultCode != RESULT_OK) {
+                return;
+            }
+            String maze = data.getStringExtra("maze");
+            if (maze != null) {
+                setEditFieldView(maze);
+                checkField();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +102,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             }
             case R.id.loadButton: {
                 Intent intent = new Intent(EditorActivity.this, LevelSelectActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, MAZE_REQUEST);
                 break;
             }
             case R.id.checkButton: {

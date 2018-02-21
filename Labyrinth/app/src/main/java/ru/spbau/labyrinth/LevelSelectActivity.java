@@ -1,6 +1,7 @@
 package ru.spbau.labyrinth;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +31,9 @@ public class LevelSelectActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                EditorActivity.setEditFieldView(dbHelper.findMazeById(ids.get(i)));
+                Intent intent = new Intent();
+                intent.putExtra("maze", dbHelper.findMazeById(ids.get(i)));
+                setResult(RESULT_OK, intent);
                 LevelSelectActivity.this.finish();
             }
         });

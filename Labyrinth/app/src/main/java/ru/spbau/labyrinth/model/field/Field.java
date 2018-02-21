@@ -19,7 +19,8 @@ public class Field {
         NO_EXITS("No exits!"),
         NO_HOSPITAL("No hospital!"),
         NOT_LINKED("There are unreachable areas!"),
-        NO_TREASURE("No treasure!");
+        NO_TREASURE("No treasure!"),
+        TOO_DENSE("Not enough free space!");
 
         private String message;
 
@@ -255,10 +256,14 @@ public class Field {
         if (exitBorderNum > 1)
             return ErrorType.MULTIPLE_EXITS;
         boolean hasHospital = false;
+        int freeSpaces = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (getState(i, j) == State.HOSPITAL) {
                     hasHospital = true;
+                }
+                if (getState(i, j) == State.NOTHING) {
+                    freeSpaces++;
                 }
             }
         }
@@ -269,6 +274,8 @@ public class Field {
 
         if (!isLinked())
             return ErrorType.NOT_LINKED;
+        if (freeSpaces < size*size / 2)
+            return ErrorType.TOO_DENSE;
         return ErrorType.NO_ERROR;
     }
 }

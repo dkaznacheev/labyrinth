@@ -9,6 +9,7 @@ import android.widget.Toast;
 import ru.spbau.labyrinth.customviews.DirectionChooseView;
 import ru.spbau.labyrinth.model.GameState;
 import ru.spbau.labyrinth.model.Model;
+import ru.spbau.labyrinth.model.field.Field;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -38,7 +39,12 @@ public class LocalGameActivity extends GameActivity {
             for (int i = 0; i < playerNum; i++) {
                 names[i] = intent.getStringExtra("player" + Integer.toString(i));
             }
-            state = new GameState(names);
+            String maze = intent.getStringExtra("maze");
+            if (maze == null) {
+                state = new GameState(names);
+            } else {
+                state = new GameState(names, Field.deserialize(maze));
+            }
         } else {
             state = GameState.deserialize(
                     getDefaultSharedPreferences(getApplicationContext())

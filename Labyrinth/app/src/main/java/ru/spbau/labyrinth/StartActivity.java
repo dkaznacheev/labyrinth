@@ -13,7 +13,6 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class StartActivity extends AppCompatActivity {
     private static final int PLAYERNAMES_REQUEST = 1;
-    private final static String PREFS_NAME = "LocalSave";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

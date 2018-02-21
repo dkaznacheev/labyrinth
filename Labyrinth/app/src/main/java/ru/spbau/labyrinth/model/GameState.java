@@ -23,10 +23,20 @@ public class GameState {
     public final Log log;
     private int currentPlayerNum;
     public final int playerNum;
+
     public GameState(String[] names) {
         playerNum = names.length;
         model = new Model();
-        players = model.init(names, 3);
+        players = model.init(names, 4);
+        turns = new Model.Turn[playerNum];
+        log = new Log(playerNum);
+        currentPlayerNum = 0;
+    }
+
+    public GameState(String[] names, Field field) {
+        playerNum = names.length;
+        model = new Model();
+        players = model.init(names, field);
         turns = new Model.Turn[playerNum];
         log = new Log(playerNum);
         currentPlayerNum = 0;

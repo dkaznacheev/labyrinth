@@ -168,14 +168,52 @@ public class Model {
         }
     }
 
-    /**
-     * game model initial method.
-     *
-     * @param names     is array of players names.
-     * @param fieldSize is size of playing field.
-     * @return array of players, which contains basic information about players.
-     * Note: id for players will be in the same order as names are given.
-     */
+    public Player[] init(String[] names, Field newField) {
+        int n = names.length;
+        players = new Player[n];
+        Random rnd = new Random();
+        field = newField;
+        Set<Integer> st = new HashSet<>();
+        st.add(field.getTreasureX() * n + field.getTreasureY());
+        int size = field.getSize();
+        int pos[] = generateRandomPosition(rnd);
+        for (int i = 0; i < n; i++) {
+            while (st.contains(pos[0] * size + pos[1])) {
+                pos = generateRandomPosition(rnd);
+            }
+            st.add(pos[0] * size + pos[1]);
+            players[i] = new Player(pos[0], pos[1], names[i], i);
+        }
+        for (int i = 0; i < field.getSize(); i++) {
+            if (!field.hasBorderX(0, i)) {
+                field.setExitBorderPos(Field.BorderType.HORIZONTAL, 0, i);
+                field.addBorderX(0, i);
+            }
+            if (!field.hasBorderX(size, i)) {
+                field.setExitBorderPos(Field.BorderType.HORIZONTAL, size, i);
+                field.addBorderX(size, i);
+            }
+            if (!field.hasBorderY(i, 0)) {
+                field.setExitBorderPos(Field.BorderType.VERTICAL, i, 0);
+                field.addBorderY(i, 0);
+            }
+            if (!field.hasBorderY(i, size)) {
+                field.setExitBorderPos(Field.BorderType.VERTICAL, i, size);
+                field.addBorderY(i, size);
+            }
+        }
+        field.setTreasureOwnerId(-1);
+        return players;
+    }
+
+        /**
+         * game model initial method.
+         *
+         * @param names     is array of players names.
+         * @param fieldSize is size of playing field.
+         * @return array of players, which contains basic information about players.
+         * Note: id for players will be in the same order as names are given.
+         */
     public Player[] init(String[] names, int fieldSize) {
         int n = names.length;
 

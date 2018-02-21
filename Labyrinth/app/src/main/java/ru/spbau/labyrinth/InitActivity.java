@@ -10,13 +10,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 public class InitActivity extends AppCompatActivity {
+    private static final int MAZE_REQUEST = 2;
     private int playerNum = MIN_PLAYERS;
     private static final int MAX_PLAYERS = 4;
     private static final int MIN_PLAYERS = 2;
     private EditText[] playerEdits;
+    private String[] names = new String[playerNum];
 
     private String[] getNames() {
-        String[] names = new String[playerNum];
         for (int i = 0; i < playerNum; i++) {
             names[i] = playerEdits[i].getText().toString();
 
@@ -95,18 +96,35 @@ public class InitActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
                 String[] names = getNames();
                 if (names == null) {
                     return;
                 }
-                intent.putExtra("playerNum", playerNum);
-                for (int i = 0; i < playerNum; i++) {
-                    intent.putExtra("player"+Integer.toString(i), names[i]);
-                }
-                setResult(RESULT_OK, intent);
-                finish();
+                Intent intent = new Intent(InitActivity.this, LevelSelectActivity.class);
+                startActivityForResult(intent, MAZE_REQUEST);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == MAZE_REQUEST) {
+            if (data == null || resultCode != RESULT_OK) {
+                return;
+            }
+            String maze = data.getStringExtra("maze");
+            if (maze == null) {
+                return;
+            }
+
+            data.putExtra("playerNum", playerNum);
+            for (int i = 0; i < playerNum; i++) {
+                data.putExtra("player"+Integer.toString(i), names[i]);
+            }
+
+            setResult(RESULT_OK, data);
+            finish();
+        }
+
     }
 }
