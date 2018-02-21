@@ -27,7 +27,7 @@ public class GameState {
     public GameState(String[] names) {
         playerNum = names.length;
         model = new Model();
-        players = model.init(names, 4);
+        players = model.init(names, 3);
         turns = new Model.Turn[playerNum];
         log = new Log(playerNum);
         currentPlayerNum = 0;

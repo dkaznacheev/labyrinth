@@ -28,7 +28,7 @@ public class EditFieldView extends FieldView {
     private void init() {
         offsetX = MAZE_OFFSET_X;
         offsetY = MAZE_OFFSET_Y;
-        int size = 4;
+        int size = 3;
         field = new Field(size);
         for (int i = 0; i < size; i++) {
             field.addBorderX(0, i);

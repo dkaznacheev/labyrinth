@@ -15,9 +15,10 @@ public class InitActivity extends AppCompatActivity {
     private static final int MAX_PLAYERS = 4;
     private static final int MIN_PLAYERS = 2;
     private EditText[] playerEdits;
-    private String[] names = new String[playerNum];
+    private String[] names;
 
     private String[] getNames() {
+        names = new String[playerNum];
         for (int i = 0; i < playerNum; i++) {
             names[i] = playerEdits[i].getText().toString();
 
