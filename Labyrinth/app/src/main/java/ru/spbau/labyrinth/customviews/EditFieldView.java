@@ -28,7 +28,7 @@ public class EditFieldView extends FieldView {
     private void init() {
         offsetX = MAZE_OFFSET_X;
         offsetY = MAZE_OFFSET_Y;
-        int size = 5;
+        int size = 4;
         field = new Field(size);
         for (int i = 0; i < size; i++) {
             field.addBorderX(0, i);
@@ -36,6 +36,7 @@ public class EditFieldView extends FieldView {
             field.addBorderY(i, 0);
             field.addBorderY(i, size);
         }
+        field.setTreasurePos(-1, -1);
         setOnTouchListener(touchListener);
     }
 
@@ -111,7 +112,7 @@ public class EditFieldView extends FieldView {
                         if (field.getState(i, j) == State.HOSPITAL)
                             field.setState(i, j, State.NOTHING);
                     }
-                field.setState(fx, fy, State.HOSPITAL);
+                field.setHospitalPos(fx, fy);
                 invalidate();
                 alertDialog.dismiss();
             }

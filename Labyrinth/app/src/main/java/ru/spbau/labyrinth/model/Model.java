@@ -39,7 +39,7 @@ public class Model {
             return;
         }
 
-        if (!isBorder(players[index].getX(), players[index].getY(), newx, newy)) {
+        if (!field.isBorder(players[index].getX(), players[index].getY(), newx, newy)) {
             players[index].setX(newx);
             players[index].setY(newy);
             if (players[index].getFieldState(newx, newy) == Field.State.UNKNOWN) {
@@ -70,7 +70,7 @@ public class Model {
 
         } else {
             boolean playerWon = false;
-            int ind[] = getBorderInd(players[index].getX(), players[index].getY(), newx, newy);
+            int ind[] = field.getBorderInd(players[index].getX(), players[index].getY(), newx, newy);
             if (index == field.getTreasureOwnerId()) {
                 if    ((ind[0] == 0 && field.isExitBorderX(ind[1], ind[2]))
                     || (ind[0] != 0 && field.isExitBorderY(ind[1], ind[2]))) {
@@ -138,7 +138,7 @@ public class Model {
         while (field.cellIsInField(curPosX, curPosY)) {
             int newX = curPosX + d[0];
             int newY = curPosY + d[1];
-            if (field.cellIsInField(newX, newY) && !isBorder(curPosX, curPosY, newX, newY)) {
+            if (field.cellIsInField(newX, newY) && !field.isBorder(curPosX, curPosY, newX, newY)) {
                 curPosX = newX;
                 curPosY = newY;
             } else {
@@ -250,31 +250,6 @@ public class Model {
         pos[0] = Math.abs(random.nextInt()) % field.getSize();
         pos[1] = Math.abs(random.nextInt()) % field.getSize();
         return pos;
-    }
-
-    private boolean isBorder(int curx, int cury, int newx, int newy) {
-        int ind[] = getBorderInd(curx, cury, newx, newy);
-        if (ind[0] == 0) {
-            return field.hasBorderX(ind[1], ind[2]);
-        } else {
-            return field.hasBorderY(ind[1], ind[2]);
-        }
-    }
-
-    private int[] getBorderInd(int curx, int cury, int newx, int newy) {
-        if (curx == newx) {
-            if (cury < newy) {
-                return new int[]{0, newy, curx};
-            } else {
-                return new int[]{0, cury, curx};
-            }
-        } else {
-            if (curx < newx) {
-                return new int[]{1, cury, newx};
-            } else {
-                return new int[]{1, cury, curx};
-            }
-        }
     }
 
     private int[] getPosChange(Direction direction) {

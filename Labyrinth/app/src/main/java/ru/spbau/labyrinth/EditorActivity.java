@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import ru.spbau.labyrinth.customviews.EditFieldView;
 import ru.spbau.labyrinth.customviews.OuterScrollView;
@@ -44,14 +47,18 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
         Button saveButton = findViewById(R.id.saveButton);
         Button loadButton = findViewById(R.id.loadButton);
+        Button checkButton = findViewById(R.id.checkButton);
 
         saveButton.setOnClickListener(this);
         loadButton.setOnClickListener(this);
+        checkButton.setOnClickListener(this);
 
         dbHelper = new DBHelper(this);
     }
 
     private void saveMaze(final Field field) {
+        if (!checkField())
+            return;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText input = new EditText(this);
         input.setHint("Maze name...");
@@ -84,8 +91,33 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(intent);
                 break;
             }
+            case R.id.checkButton: {
+                checkField();
+                break;
+            }
         }
         dbHelper.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkField();
+    }
+
+    public boolean checkField() {
+        editFieldView = findViewById(R.id.fieldView);
+        final ImageView backgroundImageView = findViewById(R.id.background);
+
+        Field.ErrorType error = editFieldView.getField().isCorrect();
+        if (error == Field.ErrorType.NO_ERROR) {
+            backgroundImageView.setImageResource(R.drawable.labyrinth_green);
+            return true;
+        } else {
+            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            backgroundImageView.setImageResource(R.drawable.labyrinth_red);
+            return false;
+        }
     }
 
     public static void setEditFieldView(String json) {
